@@ -1,0 +1,80 @@
+# Same build as panghuli-release.yml but without pushing or releasing, so PRs to dev
+# prove the image still builds before the merge publishes it. Keep the two in sync.
+name: panghuli ci
+
+on:
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: panghuli-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/sub-store
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Tag = upstream version from backend/package.json + "-panghuli.N"; N restarts at 1
+      # for each upstream version. Upstream tags have no "v" prefix, so neither do ours.
+      - id: tag
+        run: |
+          base=$(node -p "require('./backend/package.json').version")
+          last=$(git tag -l "${base}-panghuli.*" | sed 's/.*-panghuli\.//' | sort -n | tail -1)
+          echo "tag=${base}-panghuli.$(( ${last:-0} + 1 ))" >> "$GITHUB_OUTPUT"
+          echo "previous=$(git tag -l '*-panghuli.*' --sort=-creatordate | head -1)" >> "$GITHUB_OUTPUT"
+          # The image runs the same Node version the bundle was tested with.
+          echo "node=$(tr -d ' \r\n' < .node-version)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+
+      - name: Test and bundle
+        working-directory: backend
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm test
+          pnpm bundle:esbuild
+          test -s dist/sub-store.bundle.js
+
+      - name: Fetch pinned front-end
+        run: |
+          . .github/panghuli/frontend.env
+          curl -fsSL -o dist.zip \
+            "https://github.com/sub-store-org/Sub-Store-Front-End/releases/download/${FRONTEND_VERSION}/dist.zip"
+          echo "${FRONTEND_SHA256}  dist.zip" | sha256sum -c -
+          unzip -q dist.zip -d frontend-unpacked
+          # dist.zip wraps its files in a dist/ folder; copy whichever holds index.html.
+          src=$(dirname "$(find frontend-unpacked -name index.html -print -quit)")
+          test -n "$src"
+          cp -r "$src" frontend
+          echo "FRONTEND_VERSION=${FRONTEND_VERSION}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .github/panghuli/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          build-args: NODE_VERSION=${{ steps.tag.outputs.node }}
+          push: false
+          tags: ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.tag.outputs.tag }}

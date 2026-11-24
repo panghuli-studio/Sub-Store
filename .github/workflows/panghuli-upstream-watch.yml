@@ -1,0 +1,122 @@
+# Daily sync with upstream sub-store-org/Sub-Store.
+# Branch rule: `master` only mirrors upstream; `dev` is protected, is what releases are
+# built from, and takes upstream changes through a PR from `master`. So this job
+#   1. fast-forwards our `master` to upstream `master` (never merges or rewrites it), then
+#   2. opens or refreshes one PR master -> dev describing what upstream changed.
+# Step 2 needs "Allow GitHub Actions to create and approve pull requests" in the repo's
+# Actions settings; without it the same report goes into an issue instead. A PR opened by
+# GITHUB_TOKEN does not trigger panghuli-ci, so run that workflow on `master` by hand
+# before merging.
+# It also opens an issue when the pinned front-end release in .github/panghuli/frontend.env
+# falls behind upstream's latest.
+name: panghuli upstream watch
+
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  UPSTREAM_REPO: sub-store-org/Sub-Store
+  FRONTEND_REPO: sub-store-org/Sub-Store-Front-End
+  LABEL: upstream-update
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+      - name: Sync master and compare with dev
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Without this, gh picks the `upstream` remote added below and acts on upstream.
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch --quiet --no-tags upstream "+refs/heads/master:refs/remotes/upstream/master"
+          git fetch --quiet origin "+refs/heads/master:refs/remotes/origin/master"
+          gh label create "$LABEL" --color 0E8A16 --description "Upstream has changes not in dev" --force >/dev/null
+
+          # Fast-forward only: if our master ever diverges, stop and let a human look.
+          if ! git merge-base --is-ancestor origin/master upstream/master; then
+            echo "::error::origin/master has commits upstream/master lacks; not syncing"
+            exit 1
+          fi
+          if [ "$(git rev-parse origin/master)" != "$(git rev-parse upstream/master)" ]; then
+            git push origin "refs/remotes/upstream/master:refs/heads/master"
+          fi
+
+          . .github/panghuli/frontend.env
+          fe_latest=$(gh release view -R "$FRONTEND_REPO" --json tagName --jq .tagName)
+          if [ "$fe_latest" != "$FRONTEND_VERSION" ] &&
+             [ -z "$(gh issue list --state open --label "$LABEL" --search "in:title 前端 ${fe_latest}" --json number --jq '.[0].number // empty')" ]; then
+            gh issue create --label "$LABEL" --title "前端有新版本 ${fe_latest}（当前锁定 ${FRONTEND_VERSION}）" --body \
+              "上游 \`${FRONTEND_REPO}\` 最新 release 是 **${fe_latest}**，我们锁定 ${FRONTEND_VERSION}。改 \`.github/panghuli/frontend.env\` 的版本和 \`dist.zip\` 的 sha256，开 PR 到 \`dev\`。"
+          fi
+
+          up=upstream/master
+          head=$(git rev-parse "$up")
+          count=$(git rev-list --count "HEAD..${up}")
+          if [ "$count" -eq 0 ]; then
+            echo "dev already contains ${up} (${head})"
+            exit 0
+          fi
+
+          base=$(git merge-base HEAD "$up")
+          version=$(git show "${up}:backend/package.json" | jq -r .version)
+          git -c user.name=ci -c user.email=ci@localhost merge --no-commit --no-ff "$up" >/dev/null 2>&1 || true
+          conflicts=$(git diff --name-only --diff-filter=U)
+          git merge --abort >/dev/null 2>&1 || git reset --hard --quiet HEAD
+
+          {
+            echo "上游 \`${UPSTREAM_REPO}@master\` 有 **${count}** 个提交还没进 \`dev\`，上游版本 **${version}**。"
+            echo "\`master\` 已快进到上游。把 \`master\` 合进 \`dev\`（PR），合并后会构建并发布 \`${version}-panghuli.N\`。"
+            echo
+            echo "- 上游最新：[\`${head:0:9}\`](https://github.com/${UPSTREAM_REPO}/commit/${head})"
+            echo "- 完整对比：https://github.com/${UPSTREAM_REPO}/compare/${base}...${head}"
+            echo "- 改动规模：$(git diff --shortstat "${base}..${up}")"
+            echo
+            echo "## 合并预检"
+            echo
+            if [ -n "$conflicts" ]; then
+              echo "试合并 **有冲突**：从 \`dev\` 切分支合并 \`master\`，解决后开 PR 到 \`dev\`。"
+              echo
+              sed 's/^/- `/; s/$/`/' <<<"$conflicts"
+            else
+              echo "试合并无冲突。"
+            fi
+            echo
+            echo "## 上游新提交"
+            echo
+            git log --no-merges --date=short \
+              --format="- [\`%h\`](https://github.com/${UPSTREAM_REPO}/commit/%H) %s（%an，%ad）" \
+              "HEAD..${up}" | head -150
+            if [ "$count" -gt 150 ]; then echo; echo "（只列前 150 个，其余见完整对比）"; fi
+            echo
+            echo "<!-- upstream-head: ${head} -->"
+          } > body.md
+
+          title="上游更新：${version}（${count} 个提交，${head:0:9}）"
+          pr=$(gh pr list --state open --base dev --head master --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "$title" --body-file body.md
+          elif gh pr create --base dev --head master --label "$LABEL" --title "$title" --body-file body.md; then
+            :
+          else
+            echo "::warning::could not open a PR (Actions may not be allowed to); using an issue"
+            issue=$(gh issue list --state open --label "$LABEL" --search "in:title 上游更新" --json number --jq '.[0].number // empty')
+            if [ -z "$issue" ]; then
+              gh issue create --label "$LABEL" --title "$title" --body-file body.md
+            elif ! gh issue view "$issue" --json body --jq .body | grep -q "upstream-head: ${head}"; then
+              gh issue edit "$issue" --title "$title" --body-file body.md
+            fi
+          fi
