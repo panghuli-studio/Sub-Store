@@ -7,6 +7,8 @@ permissions:
   contents: write
 jobs:
   star-history:
+    # Upstream-only: in the fork this would publish releases/commits under upstream's tags.
+    if: github.repository == 'sub-store-org/Sub-Store'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

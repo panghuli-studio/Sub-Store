@@ -13,6 +13,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    # Upstream-only: in the fork this would publish releases/commits under upstream's tags.
+    if: github.repository == 'sub-store-org/Sub-Store'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
