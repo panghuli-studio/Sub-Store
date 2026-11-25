@@ -12,6 +12,10 @@ on:
       - ".github/workflows/panghuli-upstream-watch.yml"
       - ".github/workflows/main.yml"
       - ".github/workflows/star-history.yml"
+  # Monthly rebuild so the baked DB-IP City Lite (published at the start of each month)
+  # stays current; it releases <upstream>-panghuli.N+1 even when dev did not change.
+  schedule:
+    - cron: "17 3 3 * *"
   workflow_dispatch:
 
 permissions:
@@ -70,6 +74,9 @@ jobs:
           cp -r "$src" frontend
           echo "FRONTEND_VERSION=${FRONTEND_VERSION}" >> "$GITHUB_ENV"
 
+      - name: Fetch DB-IP City Lite
+        run: .github/panghuli/fetch-dbip.sh >> "$GITHUB_ENV"
+
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
@@ -91,6 +98,9 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.tag.outputs.tag }}
+            studio.panghuli.dbip.version=${{ env.DBIP_VERSION }}
+            studio.panghuli.dbip.path=/opt/app/geo/dbip-city-lite.mmdb
+            studio.panghuli.dbip.attribution=IP Geolocation by DB-IP (https://db-ip.com), CC BY 4.0
 
       - name: Publish release
         env:
@@ -109,6 +119,9 @@ jobs:
             echo "Digest: \`${IMAGE}@${DIGEST}\`"
             echo
             echo "Front-end: sub-store-org/Sub-Store-Front-End ${FRONTEND_VERSION}"
+            echo
+            echo "Geo database: DB-IP IP to City Lite ${DBIP_VERSION} at \`/opt/app/geo/dbip-city-lite.mmdb\`."
+            echo "IP Geolocation by DB-IP (https://db-ip.com), licensed under CC BY 4.0."
             echo
             if [ -n "$PREVIOUS" ]; then
               echo "Changes since ${PREVIOUS}:"
