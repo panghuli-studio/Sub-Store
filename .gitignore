@@ -142,3 +142,5 @@ CHANGELOG.md
 CODEMAP.md
 CONTEXT_BUNDLE.md
 mydocs
+# DB-IP City Lite fetched by .github/panghuli/fetch-dbip.sh at image build time
+dbip/

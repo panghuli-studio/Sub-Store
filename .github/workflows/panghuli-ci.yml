@@ -62,6 +62,9 @@ jobs:
           cp -r "$src" frontend
           echo "FRONTEND_VERSION=${FRONTEND_VERSION}" >> "$GITHUB_ENV"
 
+      - name: Fetch DB-IP City Lite
+        run: .github/panghuli/fetch-dbip.sh >> "$GITHUB_ENV"
+
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
@@ -78,3 +81,6 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.tag.outputs.tag }}
+            studio.panghuli.dbip.version=${{ env.DBIP_VERSION }}
+            studio.panghuli.dbip.path=/opt/app/geo/dbip-city-lite.mmdb
+            studio.panghuli.dbip.attribution=IP Geolocation by DB-IP (https://db-ip.com), CC BY 4.0

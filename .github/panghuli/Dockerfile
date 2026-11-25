@@ -14,6 +14,11 @@ RUN apk add --no-cache curl tzdata git procps openssl ca-certificates \
 COPY backend/dist/sub-store.bundle.js /opt/app/sub-store.bundle.js
 COPY frontend /opt/app/frontend
 
+# DB-IP IP to City Lite, fetched at build time by fetch-dbip.sh. Kept outside /opt/app/data,
+# which deployments mount as a volume and would hide.
+# IP Geolocation by DB-IP (https://db-ip.com), licensed under CC BY 4.0.
+COPY dbip/dbip-city-lite.mmdb /opt/app/geo/dbip-city-lite.mmdb
+
 # Runs as root like upstream: the data dir is a mounted volume and upstream's image does
 # not set a user, so a non-root user would need chown on every existing deployment.
 CMD ["/bin/sh", "-c", "mkdir -p /opt/app/data; cd /opt/app/data; SUB_STORE_DOCKER=true SUB_STORE_FRONTEND_PATH=/opt/app/frontend SUB_STORE_DATA_BASE_PATH=/opt/app/data node /opt/app/sub-store.bundle.js"]
