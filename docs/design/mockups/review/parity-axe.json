@@ -1,0 +1,42 @@
+[
+  {
+    "name": "my",
+    "violations": []
+  },
+  {
+    "name": "subs",
+    "violations": []
+  },
+  {
+    "name": "files",
+    "violations": []
+  },
+  {
+    "name": "sync",
+    "violations": []
+  },
+  {
+    "name": "shares",
+    "violations": []
+  },
+  {
+    "name": "archives",
+    "violations": []
+  },
+  {
+    "name": "editor-来源与内容",
+    "violations": []
+  },
+  {
+    "name": "editor-显示信息",
+    "violations": []
+  },
+  {
+    "name": "editor-请求与输出",
+    "violations": []
+  },
+  {
+    "name": "editor-加工链",
+    "violations": []
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "designCommit": "cac2e970",
+  "files": {
+    "DESIGN.md": "6b6b9df48155a6bd6738ebb3e8941255619445c7095add7ed7828fe357deb78b",
+    "docs/design/mockups/DESIGN-COMMENTS.md": "a9c736fe3d51e5ff93a8c2176fd90ad008aa141ab439c1c16b530c7b5ca4cb7a",
+    "docs/design/mockups/site/App.vue": "fb74b42cb77d636e83b3f6b7339c9eaabcf0718e813ed64907549a96a35b590f",
+    "docs/design/mockups/site/proto.css": "ff620998786c55fb8380bf1d3a39d5abc65c6fd9064a1d6019d9474739528f79"
+  }
+}
