@@ -15,3 +15,13 @@ The packaged frontend defaults to its own serving origin rather than a public th
 ## Updating upstream
 
 Update the vendored source and lockfile together with `FRONTEND_VERSION`. The shared build script rejects a version mismatch, so an archive-only update from the upstream watcher cannot silently package the previous source. Reapply the reviewed UI changes and run the design and functional checks before accepting an update.
+
+## Offline navigation and updates
+
+The generated service worker excludes `/cdn-cgi/` from the application-shell navigation fallback. Authentication callbacks must reach the authentication provider's network handler, not the Vue router. API, download and share exclusions remain in place.
+
+`registerType: autoUpdate` activates updated workers without waiting for old tabs to close. The application does not force-reload open editors; the next page load uses the updated cached assets. Backend settings and saved backend preferences are not removed.
+
+`tests/pwa.spec.ts` serves the production build and uses native service workers to check authentication callback routing, activation with an existing client, and offline application navigation. It does not stub browser cache APIs or intercept page requests. Run it after `pnpm build`.
+
+References: [Workbox navigation routing](https://developer.chrome.com/docs/workbox/modules/workbox-routing), [Vite PWA update behavior](https://vite-pwa-org.netlify.app/guide/auto-update).
