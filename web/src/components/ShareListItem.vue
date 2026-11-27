@@ -1,117 +1,102 @@
 <template>
-  <div
-    class="sub-item-wrapper"
-    :class="{ disabled: props.disabled, 'is-dual-column': props.isDualColumn }"
-    :style="{ padding: itemPadding, '--icon-fit': shareIconFit }"
-    data-testid="link-card"
-    @click="onClickPreviews"
+  <article
+    class="studio-card studio-card-share"
+    :class="{ 'studio-simple': appearanceSetting.isSimpleMode }"
   >
-    <div
-      class="sub-img-wrappers"
-      :style="{ 'margin-top': imageMarginTop }"
-      @click.stop="onClickEdit"
-    >
-      <div v-if="appearanceSetting.isShowIcon">
-        <div v-if="isIconColor">
-          <nut-avatar
-            :size="avatarSize"
-            :url="shareIcon"
-            bg-color=""
-          />
-        </div>
-        <div v-else>
-          <nut-avatar
-            class="sub-item-customer-icon"
-            :size="avatarSize"
-            :url="shareIcon"
-            bg-color=""
-          />
-        </div>
-      </div>
-    </div>
-    <div class="sub-item-content">
-      <div class="sub-item-title-wrapper">
-        <h3
-          v-if="!appearanceSetting.isSimpleMode"
-          class="sub-item-title"
-          :title="displayName || name"
-        >
-          <span class="sub-item-name">{{ displayName || name }}</span>
-          <span v-for="item in shareTags" :key="item" class="tag">
-            <nut-tag>{{ item }}</nut-tag>
-          </span>
-        </h3>
-        <h3
-          v-else
-          class="sub-item-title"
-          style="color: var(--primary-text-color); font-size: 16px"
-          :title="displayName || name"
-        >
-          <span class="sub-item-name">{{ displayName || name }}</span>
-          <span v-for="item in shareTags" :key="item" class="tag">
-            <nut-tag>{{ item }}</nut-tag>
-          </span>
-        </h3>
-
-        <div
-          class="link-item-actions"
-          :style="{ top: appearanceSetting.isSimpleMode ? '8px' : '0' }"
-        >
-          <button
-            class="copy-sub-link"
-            :disabled="props.disabled"
-            @click.stop="onClickShareLink"
-          >
-            <font-awesome-icon icon="fa-solid fa-link" />
-          </button>
-          <button
-            class="copy-sub-link"
-            :disabled="props.disabled"
-            @click.stop="onClickCopyLink"
-          >
-            <font-awesome-icon icon="fa-solid fa-clone" />
-          </button>
-          <button
-            class="refresh-sub-flow"
-            :disabled="props.disabled"
-            @click.stop="onClickEdit"
-          >
-            <font-awesome-icon icon="fa-solid fa-pen-nib" />
-          </button>
-          <button
-            class="public-link-action"
-            data-testid="link-delete-button"
-            :aria-label="t('sharePage.selectMode.delete')"
-            :title="t('sharePage.selectMode.delete')"
-            :disabled="props.disabled"
-            @click.stop="onClickDelete"
-          >
-            <font-awesome-icon icon="fa-solid fa-trash-can" />
-          </button>
-        </div>
-      </div>
-      <p v-if="!appearanceSetting.isSimpleMode" class="sub-item-remark">
-        <span>{{ t(`sharePage.createTimeLabel`) }}{{ createTime }}</span>
-      </p>
-      <p class="sub-item-remark">
-        <span>{{ appearanceSetting.isSimpleMode ? detailLine : nonSimpleSecondLine }}</span>
-      </p>
-
-      <p
-        v-if="remark && (
-          appearanceSetting.isSimpleMode
-            ? appearanceSetting.isSimpleShowRemark && !shouldInlineRemarkInSecondLine
-            : !isDualNonSimpleMode
-        )"
-        class="sub-item-remark"
+    <div class="studio-card-main">
+      <div
+        v-if="appearanceSetting.isShowIcon"
+        class="studio-symbol"
+        :style="{
+          '--studio-icon-fit': shareIconFit,
+          filter: isIconColor ? undefined : 'grayscale(1)',
+        }"
+        :class="{ 'studio-symbol-blue': false }"
       >
-        <span>{{ remark }}</span>
-      </p>
+        <nut-avatar
+          v-if="
+            props.data.icon ||
+            sourceItem?.icon ||
+            appearanceSetting.isDefaultIcon
+          "
+          :url="shareIcon"
+          :size="44"
+        /><UiIconButton
+          v-else
+          :label="t('studio.preview')"
+          :icon="'link'"
+          @activate="onClickPreviews"
+        />
+      </div>
+      <div class="studio-card-content">
+        <h2>
+          <UiButton class="studio-card-title" @click.stop="onClickPreviews">{{
+            displayName || name
+          }}</UiButton>
+        </h2>
+        <p class="studio-card-type">
+          {{
+            t(
+              "specificWord." +
+                (type === "sub"
+                  ? "singleSub"
+                  : type === "col"
+                    ? "collectionSub"
+                    : "file"),
+            )
+          }}
+        </p>
+        <p
+          v-if="
+            !appearanceSetting.isSimpleMode ||
+            appearanceSetting.isSimpleShowRemark
+          "
+          class="studio-card-detail"
+        >
+          {{
+            nonSimpleSecondLine +
+            (remark && !nonSimpleSecondLine.includes(remark)
+              ? " · " + remark
+              : "")
+          }}
+        </p>
+      </div>
     </div>
-  </div>
+    <div class="studio-card-footer">
+      <span>{{ t("tabBar.share") }}</span>
+      <div class="studio-card-actions">
+        <UiIconButton
+          :label="t('studio.share')"
+          icon="link"
+          :disabled="props.disabled"
+          @activate="onClickShareLink"
+        /><UiIconButton
+          :label="t('studio.copy')"
+          icon="clone"
+          :disabled="props.disabled"
+          @activate="onClickCopyLink"
+        /><UiIconButton
+          :label="t('studio.edit')"
+          icon="pen-nib"
+          :disabled="props.disabled"
+          @activate="onClickEdit"
+        /><UiIconButton
+          :label="t('studio.delete')"
+          icon="trash-can"
+          :disabled="props.disabled"
+          danger
+          @activate="onClickDelete"
+        />
+      </div>
+    </div>
+  </article>
 </template>
-
 <script lang="ts" setup>
+import {
+  watchEffect as studioEffect,
+  onBeforeUnmount as studioUnmounted,
+} from "vue";
+import { useStudioStore } from "@/store/studio";
 import { Dialog, Toast } from "@nutui/nutui";
 import dayjs from "dayjs";
 import { storeToRefs } from "pinia";
@@ -153,7 +138,8 @@ const isArchiveEnabled = computed(() => {
 });
 const settingsStore = useSettingsStore();
 const subsStore = useSubsStore();
-const { appearanceSetting, githubProxy, githubProxyRegex } = storeToRefs(settingsStore);
+const { appearanceSetting, githubProxy, githubProxyRegex } =
+  storeToRefs(settingsStore);
 const { currentUrl: host, currentShareBaseUrl } = useHostAPI();
 const avatarSize = computed(() => {
   if (appearanceSetting.value.isSimpleMode) return "36";
@@ -180,17 +166,14 @@ const remark = computed(() => {
 });
 const shouldInlineRemarkInSecondLine = computed(() => {
   return Boolean(
-    props.isDualColumn
-    && appearanceSetting.value.isSimpleMode
-    && remark.value
-    && appearanceSetting.value.isSimpleShowRemark
+    props.isDualColumn &&
+    appearanceSetting.value.isSimpleMode &&
+    remark.value &&
+    appearanceSetting.value.isSimpleShowRemark,
   );
 });
 const isDualNonSimpleMode = computed(() => {
-  return Boolean(
-    props.isDualColumn
-    && !appearanceSetting.value.isSimpleMode,
-  );
+  return Boolean(props.isDualColumn && !appearanceSetting.value.isSimpleMode);
 });
 const type = computed(() => {
   return props?.data?.type;
@@ -210,11 +193,12 @@ const createTime = computed(() => {
 const leftTime = computed(() => {
   if (props?.data?.mode === "count") {
     const count = Number(props?.data?.count);
-    const usedCount = props?.data?.usedCount == null ? 0 : Number(props?.data?.usedCount);
-    return Number.isSafeInteger(count)
-      && count > 0
-      && Number.isSafeInteger(usedCount)
-      && usedCount >= 0
+    const usedCount =
+      props?.data?.usedCount == null ? 0 : Number(props?.data?.usedCount);
+    return Number.isSafeInteger(count) &&
+      count > 0 &&
+      Number.isSafeInteger(usedCount) &&
+      usedCount >= 0
       ? `${t("sharePage.countUsage")} ${Math.min(usedCount, count)}/${count}`
       : t("sharePage.expired");
   }
@@ -249,7 +233,10 @@ const icon = computed(() => {
   return appearanceSetting.value.isDefaultIcon ? logoIcon : logoRedIcon;
 });
 const githubUrlRewriter = computed(() => {
-  return createGithubProxyUrlRewriter(githubProxy.value, githubProxyRegex.value);
+  return createGithubProxyUrlRewriter(
+    githubProxy.value,
+    githubProxyRegex.value,
+  );
 });
 const sourceItem = computed(() => {
   switch (type.value) {
@@ -272,14 +259,20 @@ const shareIconState = computed(() => {
 });
 
 const shareIcon = computed(() => {
-  return githubUrlRewriter.value(shareIconState.value.icon) || shareIconState.value.icon;
+  return (
+    githubUrlRewriter.value(shareIconState.value.icon) ||
+    shareIconState.value.icon
+  );
 });
 
 const isIconColor = computed(() => {
   return shareIconState.value.isIconColor;
 });
 const shareIconFit = computed(() => {
-  return resolveImageFit(shareIconState.value.iconFit, appearanceSetting.value.iconFit);
+  return resolveImageFit(
+    shareIconState.value.iconFit,
+    appearanceSetting.value.iconFit,
+  );
 });
 
 const onDeleteConfirm = async (mode: DeleteMode = "permanent") => {
@@ -316,7 +309,9 @@ const onClickCopyLink = async () => {
     await copyText(url);
     showNotify({ title: t("sharePage.copyShare.succeedNotify") });
   } catch (error) {
-    Toast.fail(t("globalNotify.copyFailed", { e: error?.message ?? String(error) }));
+    Toast.fail(
+      t("globalNotify.copyFailed", { e: error?.message ?? String(error) }),
+    );
   }
 };
 
@@ -406,10 +401,14 @@ const onClickPreviews = () => {
       url,
       general: t("subPage.panel.general"),
       notify: t("subPage.copyNotify.succeedWithShare"),
-      includeUnsupportedProxyLabel: t("subPage.panel.options.includeUnsupportedProxy"),
+      includeUnsupportedProxyLabel: t(
+        "subPage.panel.options.includeUnsupportedProxy",
+      ),
       prettyYamlLabel: t("subPage.panel.options.prettyYaml"),
       noFlowLabel: t("subPage.panel.options.noFlow"),
-      displayPreviewInWebPageLabel: t("moreSettingPage.displayPreviewInWebPage"),
+      displayPreviewInWebPageLabel: t(
+        "moreSettingPage.displayPreviewInWebPage",
+      ),
       tipsTitle: t("subPage.panel.tips.title"),
       tipsContent: `${t("subPage.panel.tips.content")}\n${t(
         "syncPage.addArtForm.includeUnsupportedProxy.tips.content",
@@ -427,6 +426,24 @@ const onClickPreviews = () => {
     lockScroll: false,
   });
 };
+
+const studio = useStudioStore();
+const studioKey = "share" + ":" + name.value;
+studioEffect(() => {
+  studio.resources[studioKey] = {
+    data: props.data,
+    name: String(displayName.value),
+    actions: [
+      {
+        label: t("studio.preview"),
+        icon: "eye",
+        run: onClickPreviews,
+        danger: false,
+      },
+    ],
+  };
+});
+studioUnmounted(() => delete studio.resources[studioKey]);
 </script>
 
 <style lang="scss" scoped>
@@ -518,9 +535,9 @@ const onClickPreviews = () => {
         align-items: center;
       }
 
-        .public-link-action,
-        .copy-sub-link,
-        .refresh-sub-flow {
+      .public-link-action,
+      .copy-sub-link,
+      .refresh-sub-flow {
         background-color: transparent;
         border: none;
         padding: 11px 6px;

@@ -2,7 +2,7 @@
   <div style="overflow: hidden; -webkit-user-select: none; user-select: none">
     <Teleport to="body">
       <div v-if="hasEntries" class="archive-nav-action-layer">
-        <button
+        <button v-tooltip="{content: isSelectionMode ? $t('archivePage.selectMode.cancel') : $t('archivePage.selectMode.enter')}"
           type="button"
           class="archive-top-selection-toggle"
           :style="{ top: selectionToggleOffset }"
@@ -10,7 +10,7 @@
           :title="isSelectionMode ? $t('archivePage.selectMode.cancel') : $t('archivePage.selectMode.enter')"
           @click="toggleSelectionMode"
         >
-          <font-awesome-icon
+          <font-awesome-icon v-tooltip="{content: isSelectionMode ? $t('archivePage.selectMode.cancel') : $t('archivePage.selectMode.enter')}"
             :icon="isSelectionMode ? 'fa-solid fa-xmark' : 'fa-solid fa-list-check'"
           />
         </button>
@@ -46,14 +46,14 @@
             <div class="list-title" @click="toggleFold('sub')">
               <div class="list-title-main">
                 <p>{{ `${$t('specificWord.singleSub')}(${subEntryCount})` }}</p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('sub')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getTypeSelectionA11yLabel('sub')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="archive-type-selection-toggle"
@@ -122,14 +122,14 @@
             <div class="list-title" @click="toggleFold('col')">
               <div class="list-title-main">
                 <p>{{ `${$t('specificWord.collectionSub')}(${colEntryCount})` }}</p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('col')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getTypeSelectionA11yLabel('col')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="archive-type-selection-toggle"
@@ -198,14 +198,14 @@
             <div class="list-title" @click="toggleFold('file')">
               <div class="list-title-main">
                 <p>{{ `${$t('specificWord.file')}(${fileEntryCount})` }}</p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('file')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getTypeSelectionA11yLabel('file')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="archive-type-selection-toggle"
@@ -274,14 +274,14 @@
             <div class="list-title" @click="toggleFold('artifact')">
               <div class="list-title-main">
                 <p>{{ `${$t('specificWord.syncConfig')}(${artifactEntryCount})` }}</p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('artifact')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getTypeSelectionA11yLabel('artifact')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="archive-type-selection-toggle"
@@ -350,14 +350,14 @@
             <div class="list-title" @click="toggleFold('share')">
               <div class="list-title-main">
                 <p>{{ `${$t('specificWord.share')}(${shareEntryCount})` }}</p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('share')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getTypeSelectionA11yLabel('share')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="archive-type-selection-toggle"
@@ -431,7 +431,7 @@
         </template>
       </nut-empty>
       <router-link to="/" class="router-link">
-        <nut-button type="primary">
+        <nut-button v-ui-action type="primary">
           {{ $t('archivePage.empty.btn') }}
         </nut-button>
       </router-link>
@@ -444,7 +444,7 @@
           <p>{{ $t('subPage.loadFailed.desc') }}</p>
         </template>
       </nut-empty>
-      <nut-button icon="refresh" type="primary" @click="init">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" icon="refresh" type="primary" @click="init">
         {{ $t('subPage.loadFailed.btn') }}
       </nut-button>
     </div>
@@ -457,10 +457,10 @@
       <div class="archive-selection-summary">
         {{ $t('archivePage.selectMode.selectedCount', { count: selectedEntryCount }) }}
       </div>
-      <nut-button plain size="small" type="primary" @click="toggleSelectAllEntries">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.selectAll')}" :aria-label="$t('studio.selectAll')" plain size="small" type="primary" @click="toggleSelectAllEntries">
         {{ isAllEntriesSelected ? $t('archivePage.selectMode.clearAll') : $t('archivePage.selectMode.selectAll') }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.restore')}" :aria-label="$t('studio.restore')"
         plain
         size="small"
         type="primary"
@@ -470,7 +470,7 @@
       >
         {{ $t('archivePage.selectMode.restore') }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.delete')}" :aria-label="$t('studio.delete')"
         size="small"
         type="danger"
         :disabled="selectedEntryCount === 0 || isDeletingSelectedEntries"
@@ -484,6 +484,8 @@
 </template>
 
 <script lang="ts" setup>
+import {useStudioStore} from '@/store/studio';
+import {watchEffect as studioWatchEffect} from 'vue';
 import { storeToRefs } from 'pinia';
 import { computed, createVNode, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -990,6 +992,11 @@ const confirmDeleteSelectedEntries = () => {
 onMounted(() => {
   init();
 });
+
+const studio=useStudioStore();
+studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')},{label:t('studio.expand')+' · '+t('studio.groupFile'),icon:'layer-group',run:()=>toggleFold('file')},{label:t('studio.expand')+' · '+t('studio.groupArtifact'),icon:'layer-group',run:()=>toggleFold('artifact')},{label:t('studio.expand')+' · '+t('studio.groupShare'),icon:'layer-group',run:()=>toggleFold('share')}];});
+studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
+studioWatchEffect(()=>{studio.selection={isSelected:isEntrySelected,toggle:toggleEntrySelection,all:toggleSelectAllEntries,remove:confirmDeleteSelectedEntries,restore:restoreSelectedEntries,count:()=>selectedEntryCount.value};});
 </script>
 
 <style lang="scss">

@@ -1,132 +1,97 @@
 <template>
-  <div
-    class="sub-item-wrapper archives-item-wrapper"
-    :class="{ disabled: props.disabled, 'is-dual-column': props.isDualColumn }"
-    :style="{ padding: itemPadding }"
+  <article
+    class="studio-card studio-card-archive"
+    :class="{ 'studio-simple': appearanceSetting.isSimpleMode }"
   >
-    <div
-      class="sub-img-wrappers"
-      :style="{ 'margin-top': appearanceSetting.isSimpleMode ? '5px' : '0' }"
-    >
+    <div class="studio-card-main">
       <div
-        class="archives-item-icon"
-        :class="{ simple: appearanceSetting.isSimpleMode, 'is-dual-column': props.isDualColumn }"
+        v-if="appearanceSetting.isShowIcon"
+        class="studio-symbol"
+        :style="{
+          '--studio-icon-fit': itemIconFit,
+          filter: isIconColor ? undefined : 'grayscale(1)',
+        }"
+        :class="{ 'studio-symbol-blue': false }"
       >
-        <img
-          :src="displayItemIcon"
-          alt=""
-          :style="{
-            opacity: isIconColor ? 1 : 0.8,
-            filter: isIconColor ? 'none' : 'brightness(var(--img-brightness))',
-            objectFit: itemIconFit,
-          }"
-        >
-      </div>
-    </div>
-    <div class="sub-item-content archives-item-content">
-      <div class="sub-item-title-wrapper archives-item-title-wrapper">
-        <h3
-          v-if="!appearanceSetting.isSimpleMode"
-          class="sub-item-title archives-item-title"
-          :title="displayName"
-        >
-          <span class="sub-item-name">{{ displayName }}</span>
-          <span
-            v-for="item in tags"
-            :key="item"
-            class="tag"
-          >
-            <nut-tag>{{ item }}</nut-tag>
-          </span>
-        </h3>
-        <h3
+        <nut-avatar
+          v-if="
+            props.data.snapshot?.icon ||
+            artifactSourceIcon ||
+            appearanceSetting.isDefaultIcon
+          "
+          :url="displayItemIcon"
+          :size="44"
+        /><UiIconButton
           v-else
-          class="sub-item-title archives-item-title"
-          style="color: var(--primary-text-color); font-size: 16px"
-          :title="displayName"
-        >
-          <span class="sub-item-name">{{ displayName }}</span>
-          <span
-            v-for="item in tags"
-            :key="item"
-            class="tag"
-          >
-            <nut-tag>{{ item }}</nut-tag>
-          </span>
-        </h3>
-        <div
-          class="archives-item-actions"
-          :style="{ top: appearanceSetting.isSimpleMode ? '8px' : '0' }"
-        >
-          <button
-            class="refresh-sub-flow"
-            :disabled="props.disabled"
-            :title="$t('archivePage.entry.restore')"
-            @click.stop="emit('restore', props.data)"
-          >
-            <font-awesome-icon icon="fa-solid fa-reply" />
-          </button>
-          <button
-            class="public-link-action archives-danger-action"
-            :disabled="props.disabled"
-            :title="$t('archivePage.entry.delete')"
-            @click.stop="emit('delete', props.data)"
-          >
-            <font-awesome-icon icon="fa-solid fa-trash-can" />
-          </button>
-        </div>
+          :label="t('studio.restore')"
+          :icon="'box-archive'"
+          @activate="emit('restore', props.data)"
+        />
       </div>
-      <template v-if="isDualNonSimpleMode">
-        <p class="sub-item-remark archives-item-detail dual-non-simple-line">
-          {{ nonSimplePrimaryLine }}
-        </p>
-        <p class="sub-item-remark archives-item-detail dual-non-simple-line">
-          {{ nonSimpleSecondLine }}
-        </p>
-      </template>
-      <template v-else>
-        <p
-          v-if="detailLineWithInlineRemark"
-          class="sub-item-remark archives-item-detail"
-          :class="{ 'sub-item-detail-isSimple': appearanceSetting.isSimpleMode }"
-        >
-          {{ detailLineWithInlineRemark }}
+      <div class="studio-card-content">
+        <h2>
+          <UiButton
+            class="studio-card-title"
+            @click.stop="emit('restore', props.data)"
+            >{{ displayName }}</UiButton
+          >
+        </h2>
+        <p class="studio-card-type">
+          {{ t("specificWord." + getArchiveTypeLabelKey(itemType)) }}
         </p>
         <p
-          v-if="archiveTimeLine && !appearanceSetting.isSimpleMode"
-          class="sub-item-remark archives-item-detail"
+          v-if="
+            !appearanceSetting.isSimpleMode ||
+            appearanceSetting.isSimpleShowRemark
+          "
+          class="studio-card-detail"
         >
           {{ archiveTimeLine }}
         </p>
-        <p
-          v-if="remark && (!appearanceSetting.isSimpleMode || appearanceSetting.isSimpleShowRemark) && !shouldInlineRemarkInSecondLine"
-          class="sub-item-remark archives-item-remark"
-        >
-          {{ remark }}
-        </p>
-      </template>
+      </div>
     </div>
-  </div>
+    <div class="studio-card-footer">
+      <span>{{ t("tabBar.archive") }}</span>
+      <div class="studio-card-actions">
+        <UiIconButton
+          :label="t('studio.restore')"
+          icon="reply"
+          :disabled="props.disabled"
+          @activate="emit('restore', props.data)"
+        /><UiIconButton
+          :label="t('studio.delete')"
+          icon="trash-can"
+          :disabled="props.disabled"
+          danger
+          @activate="emit('delete', props.data)"
+        />
+      </div>
+    </div>
+  </article>
 </template>
-
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useI18n } from 'vue-i18n';
+import {
+  watchEffect as studioEffect,
+  onBeforeUnmount as studioUnmounted,
+} from "vue";
+import { useStudioStore } from "@/store/studio";
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import { useI18n } from "vue-i18n";
 
-import logoIcon from '@/assets/icons/logo.png';
-import logoRedIcon from '@/assets/icons/logo-red.png';
-import { useSettingsStore } from '@/store/settings';
-import { useSubsStore } from '@/store/subs';
-import { resolveArtifactIcon } from '@/utils/artifactIcon';
-import { createGithubProxyUrlRewriter } from '@/utils/githubProxy';
-import { resolveImageFit } from '@/utils/iconFit';
-import { isShareType, resolveShareDisplayIconState } from '@/utils/share';
+import logoIcon from "@/assets/icons/logo.png";
+import logoRedIcon from "@/assets/icons/logo-red.png";
+import { useSettingsStore } from "@/store/settings";
+import { useSubsStore } from "@/store/subs";
+import { resolveArtifactIcon } from "@/utils/artifactIcon";
+import { createGithubProxyUrlRewriter } from "@/utils/githubProxy";
+import { resolveImageFit } from "@/utils/iconFit";
+import { isShareType, resolveShareDisplayIconState } from "@/utils/share";
 import {
   formatArchiveTime,
   getArchiveEntryDisplayName,
   getArchiveTypeLabelKey,
-} from '@/utils/archive';
+} from "@/utils/archive";
 
 const props = defineProps<{
   data: ArchiveEntry;
@@ -134,32 +99,30 @@ const props = defineProps<{
   isDualColumn?: boolean;
 }>();
 
-const emit = defineEmits(['restore', 'delete']);
+const emit = defineEmits(["restore", "delete"]);
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
 const subsStore = useSubsStore();
-const { appearanceSetting, githubProxy, githubProxyRegex } = storeToRefs(settingsStore);
+const { appearanceSetting, githubProxy, githubProxyRegex } =
+  storeToRefs(settingsStore);
 const itemPadding = computed(() => {
-  if (appearanceSetting.value.isSimpleMode) return '10px 12px';
-  return props.isDualColumn ? '12px' : '14px 16px';
+  if (appearanceSetting.value.isSimpleMode) return "10px 12px";
+  return props.isDualColumn ? "12px" : "14px 16px";
 });
 
 const displayName = computed(() => getArchiveEntryDisplayName(props.data));
-const remark = computed(() => props.data?.remark || '');
+const remark = computed(() => props.data?.remark || "");
 const shouldInlineRemarkInSecondLine = computed(() => {
   return Boolean(
-    props.isDualColumn
-    && appearanceSetting.value.isSimpleMode
-    && remark.value
-    && appearanceSetting.value.isSimpleShowRemark
+    props.isDualColumn &&
+    appearanceSetting.value.isSimpleMode &&
+    remark.value &&
+    appearanceSetting.value.isSimpleShowRemark,
   );
 });
 const isDualNonSimpleMode = computed(() => {
-  return Boolean(
-    props.isDualColumn
-    && !appearanceSetting.value.isSimpleMode,
-  );
+  return Boolean(props.isDualColumn && !appearanceSetting.value.isSimpleMode);
 });
 const tags = computed(() => props.data?.tag || []);
 const itemType = computed(() => props.data?.itemType);
@@ -169,7 +132,7 @@ const icon = computed(() => {
   return appearanceSetting.value.isDefaultIcon ? logoIcon : logoRedIcon;
 });
 const shareSnapshot = computed(() => {
-  return itemType.value === 'share' ? props.data?.snapshot : null;
+  return itemType.value === "share" ? props.data?.snapshot : null;
 });
 const shareSourceType = computed(() => {
   const snapshotType = shareSnapshot.value?.type;
@@ -179,9 +142,9 @@ const shareSourceType = computed(() => {
   return isShareType(shareType.value) ? shareType.value : null;
 });
 const shareSourceName = computed(() => {
-  return typeof shareSnapshot.value?.name === 'string'
+  return typeof shareSnapshot.value?.name === "string"
     ? shareSnapshot.value.name
-    : '';
+    : "";
 });
 const shareSourceItem = computed(() => {
   if (!shareSourceType.value || !shareSourceName.value) {
@@ -189,11 +152,11 @@ const shareSourceItem = computed(() => {
   }
 
   switch (shareSourceType.value) {
-    case 'sub':
+    case "sub":
       return subsStore.getOneSub(shareSourceName.value) || null;
-    case 'col':
+    case "col":
       return subsStore.getOneCollection(shareSourceName.value) || null;
-    case 'file':
+    case "file":
       return subsStore.getOneFile(shareSourceName.value) || null;
     default:
       return null;
@@ -207,19 +170,19 @@ const shareIconState = computed(() => {
   });
 });
 const artifactSnapshot = computed(() => {
-  return itemType.value === 'artifact' ? props.data?.snapshot : null;
+  return itemType.value === "artifact" ? props.data?.snapshot : null;
 });
 const artifactSourceItem = computed(() => {
-  if (itemType.value !== 'artifact' || !artifactSnapshot.value?.source) {
+  if (itemType.value !== "artifact" || !artifactSnapshot.value?.source) {
     return null;
   }
 
   switch (artifactSnapshot.value.type) {
-    case 'collection':
+    case "collection":
       return subsStore.getOneCollection(artifactSnapshot.value.source);
-    case 'subscription':
+    case "subscription":
       return subsStore.getOneSub(artifactSnapshot.value.source);
-    case 'file':
+    case "file":
       return subsStore.getOneFile(artifactSnapshot.value.source);
     default:
       return null;
@@ -227,9 +190,9 @@ const artifactSourceItem = computed(() => {
 });
 const artifactSourceIcon = computed(() => {
   if (
-    itemType.value !== 'artifact'
-    || artifactSnapshot.value?.type !== 'file'
-    || !artifactSnapshot.value?.source
+    itemType.value !== "artifact" ||
+    artifactSnapshot.value?.type !== "file" ||
+    !artifactSnapshot.value?.source
   ) {
     return null;
   }
@@ -238,14 +201,14 @@ const artifactSourceIcon = computed(() => {
 });
 const artifactSourceType = computed(() => {
   switch (artifactSnapshot.value?.type) {
-    case 'subscription':
-      return t('specificWord.singleSub');
-    case 'collection':
-      return t('specificWord.collectionSub');
-    case 'file':
-      return t('specificWord.file');
+    case "subscription":
+      return t("specificWord.singleSub");
+    case "collection":
+      return t("specificWord.collectionSub");
+    case "file":
+      return t("specificWord.file");
     default:
-      return t('specificWord.unknownType');
+      return t("specificWord.unknownType");
   }
 });
 const artifactSourceName = computed(() => {
@@ -253,65 +216,72 @@ const artifactSourceName = computed(() => {
 
   if (sourceItem) {
     return (
-      sourceItem.displayName
-      || sourceItem['display-name']
-      || sourceItem.name
+      sourceItem.displayName || sourceItem["display-name"] || sourceItem.name
     );
   }
 
   return artifactSnapshot.value?.source
     ? `${artifactSnapshot.value.source}(🚫)`
-    : t('specificWord.unknownSource');
+    : t("specificWord.unknownSource");
 });
 
 const itemIcon = computed(() => {
   switch (itemType.value) {
-    case 'sub':
+    case "sub":
       return props.data?.snapshot?.icon || icon.value;
-    case 'col':
+    case "col":
       return props.data?.snapshot?.icon || icon.value;
-    case 'file':
+    case "file":
       return props.data?.snapshot?.icon || icon.value;
-    case 'artifact':
+    case "artifact":
       return resolveArtifactIcon({
         artifact: artifactSnapshot.value,
         isDefaultIcon: appearanceSetting.value.isDefaultIcon,
         sourceIcon: artifactSourceIcon.value,
       });
-    case 'share':
+    case "share":
       return shareIconState.value.icon;
     default:
       return icon.value;
   }
 });
 const githubUrlRewriter = computed(() => {
-  return createGithubProxyUrlRewriter(githubProxy.value, githubProxyRegex.value);
+  return createGithubProxyUrlRewriter(
+    githubProxy.value,
+    githubProxyRegex.value,
+  );
 });
 const displayItemIcon = computed(() => {
   return githubUrlRewriter.value(itemIcon.value) || itemIcon.value;
 });
 
 const isIconColor = computed(() => {
-  if (itemType.value === 'share') {
+  if (itemType.value === "share") {
     return shareIconState.value.isIconColor;
   }
 
   return props.data?.snapshot?.isIconColor !== false;
 });
 const itemIconFit = computed(() => {
-  if (itemType.value === 'share') {
-    return resolveImageFit(shareIconState.value.iconFit, appearanceSetting.value.iconFit);
+  if (itemType.value === "share") {
+    return resolveImageFit(
+      shareIconState.value.iconFit,
+      appearanceSetting.value.iconFit,
+    );
   }
 
-  return resolveImageFit(props.data?.snapshot?.iconFit, appearanceSetting.value.iconFit);
+  return resolveImageFit(
+    props.data?.snapshot?.iconFit,
+    appearanceSetting.value.iconFit,
+  );
 });
 
 const detailParts = computed(() => {
-  if (itemType.value === 'artifact') {
+  if (itemType.value === "artifact") {
     return appearanceSetting.value.isSimpleMode
       ? [artifactSourceType.value, artifactSourceName.value]
       : [
-          t('syncPage.detail.firstLine', {
+          t("syncPage.detail.firstLine", {
             type: artifactSourceType.value,
             name: artifactSourceName.value,
           }),
@@ -319,18 +289,16 @@ const detailParts = computed(() => {
   }
 
   if (
-    itemType.value === 'sub'
-    || itemType.value === 'col'
-    || itemType.value === 'file'
+    itemType.value === "sub" ||
+    itemType.value === "col" ||
+    itemType.value === "file"
   ) {
     return [];
   }
 
-  const parts = [
-    t(`specificWord.${getArchiveTypeLabelKey(itemType.value)}`),
-  ];
+  const parts = [t(`specificWord.${getArchiveTypeLabelKey(itemType.value)}`)];
 
-  if (itemType.value === 'share' && shareType.value) {
+  if (itemType.value === "share" && shareType.value) {
     parts.push(t(`specificWord.${getArchiveTypeLabelKey(shareType.value)}`));
   }
 
@@ -339,22 +307,20 @@ const detailParts = computed(() => {
 
 const archiveTimeLine = computed(() => {
   return archivedAt.value
-    ? t('archivePage.entry.archivedAt', {
+    ? t("archivePage.entry.archivedAt", {
         time: archivedAt.value,
       })
-    : '';
+    : "";
 });
 
 const detailLine = computed(() => {
   if (
-    !appearanceSetting.value.isSimpleMode
-    && (
-      itemType.value === 'sub'
-      || itemType.value === 'col'
-      || itemType.value === 'file'
-    )
+    !appearanceSetting.value.isSimpleMode &&
+    (itemType.value === "sub" ||
+      itemType.value === "col" ||
+      itemType.value === "file")
   ) {
-    return '';
+    return "";
   }
 
   const parts = [...detailParts.value];
@@ -363,13 +329,13 @@ const detailLine = computed(() => {
     parts.push(archivedAt.value);
   }
 
-  if (itemType.value === 'artifact' && appearanceSetting.value.isSimpleMode) {
+  if (itemType.value === "artifact" && appearanceSetting.value.isSimpleMode) {
     const [type, name, time] = parts;
-    const sourceText = [type, name].filter(Boolean).join(' ');
+    const sourceText = [type, name].filter(Boolean).join(" ");
     return time ? `${sourceText} · ${time}` : sourceText;
   }
 
-  return parts.join(' · ');
+  return parts.join(" · ");
 });
 const detailLineWithInlineRemark = computed(() => {
   if (!shouldInlineRemarkInSecondLine.value) {
@@ -388,6 +354,24 @@ const nonSimpleSecondLine = computed(() => {
 
   return [archiveTimeLine.value, remark.value].filter(Boolean).join(" · ");
 });
+
+const studio = useStudioStore();
+const studioKey = "archive" + ":" + props.data.id;
+studioEffect(() => {
+  studio.resources[studioKey] = {
+    data: props.data,
+    name: String(displayName.value),
+    actions: [
+      {
+        label: t("studio.preview"),
+        icon: "eye",
+        run: () => emit("restore", props.data),
+        danger: false,
+      },
+    ],
+  };
+});
+studioUnmounted(() => delete studio.resources[studioKey]);
 </script>
 
 <style lang="scss" scoped>

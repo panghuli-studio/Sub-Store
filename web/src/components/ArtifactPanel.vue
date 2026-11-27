@@ -117,7 +117,7 @@
           <template #label>
             <div class="label" @click="includeUnsupportedProxyTips">
               <p>{{ $t(`syncPage.addArtForm.includeUnsupportedProxy.label`) }}</p>
-              <nut-icon name="tips"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
             </div>
           </template>
           <div class="switch-wrapper">

@@ -4,7 +4,7 @@
   >
     <Teleport to="body">
       <div v-if="hasShares" class="link-nav-action-layer">
-        <button
+        <button v-tooltip="{content: $t(`sharePage.emptyShare.btn`)}"
           v-if="!appearanceSetting.showFloatingAddButton"
           type="button"
           class="link-top-create-button"
@@ -13,9 +13,9 @@
           :title="$t(`sharePage.emptyShare.btn`)"
           @click="addShare"
         >
-          <font-awesome-icon icon="fa-solid fa-plus" />
+          <font-awesome-icon v-tooltip="{content: $t(`sharePage.emptyShare.btn`)}" icon="fa-solid fa-plus" />
         </button>
-        <button
+        <button v-tooltip="{content: isSelectionMode ? $t(`sharePage.selectMode.cancel`) : $t(`sharePage.selectMode.enter`)}"
           type="button"
           class="link-top-selection-toggle"
           :style="{ top: shareTopSelectionOffset, left: shareTopSelectionLeft }"
@@ -23,7 +23,7 @@
           :title="isSelectionMode ? $t(`sharePage.selectMode.cancel`) : $t(`sharePage.selectMode.enter`)"
           @click="toggleSelectionMode"
         >
-          <font-awesome-icon
+          <font-awesome-icon v-tooltip="{content: isSelectionMode ? $t(`sharePage.selectMode.cancel`) : $t(`sharePage.selectMode.enter`)}"
             :icon="isSelectionMode ? 'fa-solid fa-xmark' : 'fa-solid fa-list-check'"
           />
         </button>
@@ -57,7 +57,7 @@
             class="drag-btn refresh"
             @click="refresh"
           >
-            <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrow-rotate-right" />
           </div>
 
           <!-- 加号 -->
@@ -68,7 +68,7 @@
             @click="addShare"
           >
             <div class="drag-btn">
-              <font-awesome-icon icon="fa-solid fa-plus" />
+              <font-awesome-icon v-tooltip="{content: $t('studio.add')}" icon="fa-solid fa-plus" />
             </div>
           </div>
         </nut-drag>
@@ -109,14 +109,14 @@
                 <p>
                   {{ `${$t(`specificWord.singleSub`)}(${subShareDataCount})` }}
                 </p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('sub')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getShareTypeSelectionA11yLabel('sub')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="link-type-selection-toggle"
@@ -196,14 +196,14 @@
                     )}(${collectionShareDataCount})`
                   }}
                 </p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('col')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getShareTypeSelectionA11yLabel('col')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="link-type-selection-toggle"
@@ -279,14 +279,14 @@
                 <p>
                   {{ `${$t(`specificWord.file`)}(${fileShareDataCount})` }}
                 </p>
-                <nut-icon
+                <nut-icon v-tooltip="{content: $t('studio.expand')}"
                   v-if="!isFold('file')"
                   name="rect-down"
                   size="12px"
                 ></nut-icon>
-                <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
               </div>
-              <button
+              <button v-tooltip="{content: getShareTypeSelectionA11yLabel('file')}"
                 v-if="isSelectionMode"
                 type="button"
                 class="link-type-selection-toggle"
@@ -364,7 +364,7 @@
           <p>{{ $t(`sharePage.emptyShare.desc`) }}</p>
         </template>
       </nut-empty>
-      <nut-button type="primary" @click="addShare">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')" type="primary" @click="addShare">
         {{ $t(`sharePage.emptyShare.btn`) }}
       </nut-button>
     </div>
@@ -387,7 +387,7 @@
           </p>
         </template>
       </nut-empty>
-      <nut-button icon="refresh" type="primary" @click="refresh">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" icon="refresh" type="primary" @click="refresh">
         {{ $t(`subPage.loadFailed.btn`) }}
       </nut-button>
       <!-- <a
@@ -406,14 +406,14 @@
       <div class="link-selection-summary">
         {{ $t(`sharePage.selectMode.selectedCount`, { count: selectedShareCount }) }}
       </div>
-      <nut-button plain size="small" type="primary" @click="toggleSelectAllShares">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.selectAll')}" :aria-label="$t('studio.selectAll')" plain size="small" type="primary" @click="toggleSelectAllShares">
         {{
           isAllSharesSelected
             ? $t(`sharePage.selectMode.clearAll`)
             : $t(`sharePage.selectMode.selectAll`)
         }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.selectExpired')}" :aria-label="$t('studio.selectExpired')"
         plain
         size="small"
         type="primary"
@@ -422,7 +422,7 @@
       >
         {{ $t(`sharePage.selectMode.selectExpired`) }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.delete')}" :aria-label="$t('studio.delete')"
         size="small"
         type="danger"
         :disabled="selectedShareCount === 0 || isDeletingSelectedShares"
@@ -436,6 +436,8 @@
 </template>
 
 <script lang="ts" setup>
+import {useStudioStore} from '@/store/studio';
+import {watchEffect as studioWatchEffect} from 'vue';
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, toRaw, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -922,6 +924,11 @@ const confirmDeleteSelectedShares = () => {
   });
 };
 
+
+const studio=useStudioStore();
+studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')},{label:t('studio.expand')+' · '+t('studio.groupFile'),icon:'layer-group',run:()=>toggleFold('file')}];});
+studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
+studioWatchEffect(()=>{studio.selection={isSelected:isShareSelected,toggle:toggleShareSelection,all:toggleSelectAllShares,expired:selectExpiredShares,remove:confirmDeleteSelectedShares,count:()=>selectedShareCount.value};});
 </script>
 
 <style lang="scss">

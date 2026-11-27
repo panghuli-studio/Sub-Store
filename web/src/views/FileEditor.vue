@@ -9,7 +9,7 @@
         class="editor-section-tabs"
         :style="{ top: navBarHeight }"
       >
-        <div class="editor-section-tab-list" role="tablist">
+        <div class="editor-section-tab-list" role="tablist" v-editor-tabs>
           <button
             v-for="tab in FILE_EDITOR_TABS"
             :key="tab"
@@ -17,7 +17,7 @@
             class="editor-section-tab"
             :class="{ current: activeEditorTab === tab }"
             role="tab"
-            :aria-selected="activeEditorTab === tab"
+            :aria-selected="activeEditorTab === tab" :tabindex="activeEditorTab===tab?0:-1"
             @click="activeEditorTab = tab"
           >
             {{ $t(`editorPage.subConfig.editorTabs.${tab}`) }}
@@ -148,7 +148,7 @@
               <nut-switch v-model="form.isIconColor" />
             </div>
           </nut-form-item>
-          <ImageFitPicker v-model="form.iconFit" :fallback-value="appearanceSetting.iconFit" />
+          <ImageFitPicker v-model="form.iconFit" :fallback-value="appearanceSetting.iconFit" /><nut-form-item label="文件分类"><nut-radiogroup v-model="form.uiCategory" direction="horizontal"><nut-radio label="">自动识别</nut-radio><nut-radio label="config">完整配置</nut-radio><nut-radio label="nodes">节点文件</nut-radio><nut-radio label="other">普通文件</nut-radio></nut-radiogroup></nut-form-item>
           </div>
           <div v-show="!editorTabsEnabled || activeEditorTab === 'content'" class="editor-tab-content">
           <nut-form-item required :label="$t(`specificWord.type`)" prop="type">
@@ -246,7 +246,7 @@
                     <span>{{
                       $t(`syncPage.addArtForm.includeUnsupportedProxy.label`)
                     }}</span>
-                    <nut-icon name="tips"></nut-icon>
+                    <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
                   </span>
                 </template>
                 <div class="switch-wrapper">
@@ -430,7 +430,7 @@
             <template #label>
               <span class="label-with-tip" @click="ageOutputTips">
                 <span>{{ $t("ageKey.publicKey.label") }}</span>
-                <nut-icon name="tips"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
               </span>
             </template>
             <div class="age-key-field">
@@ -487,12 +487,12 @@
     </div>
 
     <div class="bottom-btn-wrapper">
-      <nut-button @click="compare" class="compare-btn btn" plain shape="square">
-        <font-awesome-icon icon="fa-solid fa-eye" />
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.preview')}" :aria-label="$t('studio.preview')" @click="compare" class="compare-btn btn" plain shape="square">
+        <font-awesome-icon v-tooltip="{content: $t('studio.preview')}" icon="fa-solid fa-eye" />
         {{ $t("editorPage.subConfig.btn.compare") }}
       </nut-button>
-      <nut-button @click="submit" class="submit-btn btn" type="primary" shape="square">
-        <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.save')}" :aria-label="$t('studio.save')" @click="submit" class="submit-btn btn" type="primary" shape="square">
+        <font-awesome-icon v-tooltip="{content: $t('studio.save')}" icon="fa-solid fa-floppy-disk" />
         {{ $t("editorPage.subConfig.btn.save") }}
       </nut-button>
     </div>
@@ -793,6 +793,7 @@ const setTagValue = (tag: any) => {
   form.tag = tag;      
 };
 const form = reactive<any>({
+  uiCategory: '',
   name: "",
   displayName: "",
   remark: "",
@@ -924,6 +925,7 @@ watchEffect(() => {
     form.source = sourceData.source || "local";
     const fileType = normalizeFileType(sourceData.type || 'file') || 'file';
     form.type = fileType;
+    form.uiCategory=sourceData.uiCategory||'';
     form.sourceType = normalizeFormSourceType(sourceData, fileType);
     form.sourceName = sourceData.sourceName;
     form.mode = sourceData.mode || 'config';

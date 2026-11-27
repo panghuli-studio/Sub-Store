@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page-wrapper"><nut-cell :title="$t('navBar.navigationMode.switchToNarrow')"><template #link><nut-switch :model-value="appearanceSetting.useNarrowModeOnWideScreen" :aria-label="$t('navBar.navigationMode.switchToNarrow')" @update:model-value="setWideScreenNarrowMode($event)"/></template></nut-cell>
     <!-- <p class="More-title">
       {{ $t(`themeSettingPage.themeSettingTitle`) }}
     </p> -->
@@ -36,7 +36,7 @@
         <template #title>
           <span class="label-with-tip">
             {{ $t(`moreSettingPage.iconFit`) }}
-            <nut-icon
+            <nut-icon v-ui-action v-tooltip="{content: $t(`imageFit.tips.title`)}"
               name="tips"
               size="14"
               role="button"
@@ -209,6 +209,7 @@
   import DesktopPicker from '@/components/DesktopPicker.vue';
   import { initStores } from "@/utils/initApp";
   import { Dialog, Toast } from '@nutui/nutui';
+  import {useWideScreenNarrowMode} from '@/hooks/useWideScreenNarrowMode';
   import { useSettingsStore } from '@/store/settings';
   import { storeToRefs } from 'pinia';
   import { useGlobalStore } from '@/store/global';
@@ -222,6 +223,7 @@
   // import { Dialog } from '@nutui/nutui';
 
   const { t } = useI18n();
+  const {setWideScreenNarrowMode}=useWideScreenNarrowMode();
   const settingsStore = useSettingsStore();
   const globalStore = useGlobalStore();
   const {

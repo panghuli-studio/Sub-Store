@@ -23,6 +23,10 @@ jobs:
         working-directory: web
       - run: pnpm exec playwright test
         working-directory: web
+      - run: pnpm install --frozen-lockfile && pnpm bundle:esbuild
+        working-directory: backend
+      - run: UI_BACKEND_DATA="$RUNNER_TEMP/sub-store-ui" sh tests/check-live.sh
+        working-directory: web
       - uses: actions/upload-artifact@v4
         if: always()
         with:

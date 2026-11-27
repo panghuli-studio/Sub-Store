@@ -1,12 +1,12 @@
 <template>
   <div class="age-key-helper">
-    <button
+    <button v-tooltip="{content: $t('ageKey.helper.open')}"
       type="button"
       class="age-key-trigger"
       :aria-label="$t('ageKey.helper.open')"
       @click="openDialog"
     >
-      <nut-icon name="refresh" />
+      <nut-icon v-tooltip="{content: $t('ageKey.helper.open')}" name="refresh" />
     </button>
 
     <nut-dialog
@@ -35,7 +35,7 @@
           <div class="age-key-section-header">
             <div class="age-key-section-title">{{ $t("ageKey.secretKey.label") }}</div>
             <div class="age-key-section-actions">
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.generateKey')}" :aria-label="$t('studio.generateKey')"
                 size="small"
                 type="primary"
                 shape="square"
@@ -45,7 +45,7 @@
               >
                 {{ $t("ageKey.helper.generate") }}
               </nut-button>
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
                 size="small"
                 plain
                 shape="square"
@@ -55,7 +55,7 @@
               >
                 {{ $t("ageKey.helper.copySecret") }}
               </nut-button>
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.applyKey')}" :aria-label="$t('studio.applyKey')"
                 v-if="props.applyMode === 'secret'"
                 size="small"
                 type="primary"
@@ -77,14 +77,14 @@
               :autosize="{ minHeight: 70, maxHeight: 140 }"
               :placeholder="$t('ageKey.secretKey.placeholder')"
             />
-            <button
+            <button v-tooltip="{content: $t('ageKey.helper.clearSecret')}"
               v-if="secretKey"
               type="button"
               class="age-key-clear"
               :aria-label="$t('ageKey.helper.clearSecret')"
               @click="secretKey = ''"
             >
-              <nut-icon name="mask-close" />
+              <nut-icon v-tooltip="{content: $t('ageKey.helper.clearSecret')}" name="mask-close" />
             </button>
           </div>
         </section>
@@ -93,7 +93,7 @@
           <div class="age-key-section-header">
             <div class="age-key-section-title">{{ $t("ageKey.publicKey.label") }}</div>
             <div class="age-key-section-actions">
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.deriveKey')}" :aria-label="$t('studio.deriveKey')"
                 size="small"
                 plain
                 shape="square"
@@ -104,7 +104,7 @@
               >
                 {{ $t("ageKey.helper.derive") }}
               </nut-button>
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
                 size="small"
                 plain
                 shape="square"
@@ -114,7 +114,7 @@
               >
                 {{ $t("ageKey.helper.copyPublic") }}
               </nut-button>
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.applyKey')}" :aria-label="$t('studio.applyKey')"
                 v-if="props.applyMode === 'pair'"
                 size="small"
                 type="primary"
@@ -125,7 +125,7 @@
               >
                 {{ $t("ageKey.helper.applyPair") }}
               </nut-button>
-              <nut-button
+              <nut-button v-ui-action v-tooltip="{content: $t('studio.applyKey')}" :aria-label="$t('studio.applyKey')"
                 v-else
                 size="small"
                 type="primary"
@@ -147,14 +147,14 @@
               :autosize="{ minHeight: 48, maxHeight: 100 }"
               :placeholder="$t('ageKey.publicKey.placeholder')"
             />
-            <button
+            <button v-tooltip="{content: $t('ageKey.helper.clearPublic')}"
               v-if="publicKey"
               type="button"
               class="age-key-clear"
               :aria-label="$t('ageKey.helper.clearPublic')"
               @click="publicKey = ''"
             >
-              <nut-icon name="mask-close" />
+              <nut-icon v-tooltip="{content: $t('ageKey.helper.clearPublic')}" name="mask-close" />
             </button>
           </div>
         </section>
@@ -164,7 +164,7 @@
         </p>
       </div>
       <template #footer>
-        <nut-button size="small" type="primary" shape="round" class="age-key-close" @click="visible = false">
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')" size="small" type="primary" shape="round" class="age-key-close" @click="visible = false">
           {{ $t("ageKey.helper.close") }}
         </nut-button>
       </template>

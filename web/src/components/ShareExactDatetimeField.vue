@@ -47,7 +47,7 @@
               <span class="expires-datetime-display__text">
                 {{ displayText }}
               </span>
-              <button
+              <button v-tooltip="{content: clearText}"
                 v-if="hasValue"
                 type="button"
                 class="expires-datetime-clear"

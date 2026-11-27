@@ -68,7 +68,7 @@
       </div>
 
       <div class="buttons">
-        <nut-button
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.save')}" :aria-label="$t('studio.save')"
           type="primary"
           block
           :loading="loading"
@@ -76,7 +76,7 @@
         >
           {{ $t('magicPath.connect') }}
         </nut-button>
-        <nut-button
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.skip')}" :aria-label="$t('studio.skip')"
           plain
           block
           @click="handleSkip"

@@ -8,7 +8,7 @@
       <header class="compare-page-header" :class="{ 'preview-popup-header': !url }">
         <template v-if="url">
           <h1>
-            <span class="title" @click="copyUrl"><font-awesome-icon class="copy" icon="fa-solid fa-clone" @click="copyUrl" /><span class="titleText">点击复制, 在外部资源中使用:</span></span>
+            <span class="title" @click="copyUrl"><font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.copyContent')}" class="copy" icon="fa-solid fa-clone" @click="copyUrl" /><span class="titleText">点击复制, 在外部资源中使用:</span></span>
             <span class="displayName">
               <a class="url" :href="url" target="_blank">{{ url }}</a>
             </span>
@@ -16,23 +16,23 @@
         </template>
         <template v-else>
           <div class="btn-groups preview-leading">
-            <button type="button" class="btn close" @click="clickClose">
-              <font-awesome-icon icon="fa-solid fa-xmark" />
+            <button v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')" type="button" class="btn close" @click="clickClose">
+              <font-awesome-icon v-tooltip="{content: $t('studio.close')}" icon="fa-solid fa-xmark" />
             </button>
-            <button v-if="showRefresh" type="button" class="btn refresh" @click="emit('refresh')">
-              <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
+            <button v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" v-if="showRefresh" type="button" class="btn refresh" @click="emit('refresh')">
+              <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrows-rotate" />
             </button>
           </div>
           <h1 class="preview-popup-title">{{ $t(`comparePage.title`) }}</h1>
           <div class="btn-groups preview-trailing">
-            <button
+            <button v-tooltip="{content: t('logsPage.floating.open')}"
               type="button"
               class="btn logs"
               :aria-label="t('logsPage.floating.open')"
               :title="t('logsPage.floating.open')"
               @click.stop="openLogsOverlay"
             >
-              <font-awesome-icon icon="fa-solid fa-file-lines" />
+              <font-awesome-icon v-tooltip="{content: t('logsPage.floating.open')}" icon="fa-solid fa-file-lines" />
             </button>
           </div>
         </template>

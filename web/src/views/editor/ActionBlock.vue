@@ -2,20 +2,20 @@
   <div class="form-block-wrapper">
     <div class="sticky-title-wrapper actions-title-wrapper">
       <p>{{ $t(actionsTitleKey) }}</p>
-      <font-awesome-icon
+      <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.expand')}"
         v-if="isCollapsed"
         @click.stop="setCollapsed(false)"
         class="toggle fa-toggle"
         icon="fa-solid fa-toggle-on "
       />
-      <font-awesome-icon
+      <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.expand')}"
         v-else
         @click.stop="setCollapsed(true)"
         class="toggle fa-toggle"
         icon="fa-solid fa-toggle-off"
       />
-      <button v-if="sourceType !== 'file'" @click="popActionsHelp">
-        <font-awesome-icon icon="fa-solid fa-circle-question" />
+      <button v-tooltip="{content: $t('studio.help')}" :aria-label="$t('studio.help')" v-if="sourceType !== 'file'" @click="popActionsHelp">
+        <font-awesome-icon v-tooltip="{content: $t('studio.help')}" icon="fa-solid fa-circle-question" />
         {{ $t(`editorPage.subConfig.basic.nodeActionsHelp`) }}
       </button>
     </div>
@@ -50,8 +50,8 @@
           <div :class="{ 'list-group-item-title': true, 'collapsed': collapsedElements.includes(element.id) }">
             <div class="title-text left">
               <span class="collapsed" @click="toggleElementCollapsed(element.id)">
-                <nut-icon v-if="!collapsedElements.includes(element.id)" name="rect-down" size="12px"></nut-icon>
-                <nut-icon v-if="collapsedElements.includes(element.id)" name="rect-right" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-if="!collapsedElements.includes(element.id)" name="rect-down" size="12px"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.expand')}" v-if="collapsedElements.includes(element.id)" name="rect-right" size="12px"></nut-icon>
               </span>
               <div class="input-wrapper">
                 <nut-input
@@ -69,13 +69,13 @@
                   <!-- <template #button>
                     <div class="list-group-item-icons">
                       <template v-if="!findEditItemById(element).isEditing">
-                        <font-awesome-icon icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
+                        <font-awesome-icon v-ui-action icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
                       </template>
                       <template v-else>
-                        <font-awesome-icon icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
-                        <font-awesome-icon icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
+                        <font-awesome-icon v-ui-action icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
+                        <font-awesome-icon v-ui-action icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
                       </template>
-                      <font-awesome-icon icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
+                      <font-awesome-icon v-ui-action icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
                     </div>
                   </template> -->
                 </nut-input>
@@ -87,23 +87,23 @@
               </div>
               <!-- <div class="list-group-item-icons">
                 <template v-if="!findEditItemById(element).isEditing">
-                  <font-awesome-icon icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
+                  <font-awesome-icon v-ui-action icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
                 </template>
                 <template v-else>
-                  <font-awesome-icon icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
-                  <font-awesome-icon icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
+                  <font-awesome-icon v-ui-action icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
+                  <font-awesome-icon v-ui-action icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
                 </template>
-                <font-awesome-icon icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
+                <font-awesome-icon v-ui-action icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
               </div> -->
             </div>
             <div class="right">
               <div class="list-group-item-icons icon-button__input">
                 <template v-if="!findEditItemById(element).isEditing">
-                  <font-awesome-icon icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
+                  <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.edit')}" icon="fa-solid fa-pen-to-square" @click.stop="toggleEditName(element)" />
                 </template>
                 <template v-else>
-                  <font-awesome-icon icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
-                  <font-awesome-icon icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
+                  <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.save')}" icon="fa-solid fa-floppy-disk" @click.stop="saveEditName(element)" />
+                  <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.close')}" icon="fa-solid fa-ban" @click.stop="exitEditName(element)" />
                 </template>
               </div>
               <div class="action-switch">
@@ -161,13 +161,13 @@
                 </span>
               </div>
               <div class="icon-button">
-                <font-awesome-icon icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
+                <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.help')}" icon="fa-solid fa-circle-question" @click.stop="pop(element.type, element.tipsDes)" />
               </div>
               <div class="icon-button">
-                <font-awesome-icon icon="fa-solid fa-clone" @click="copyItem(element)"></font-awesome-icon>
+                <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.copyContent')}" icon="fa-solid fa-clone" @click="copyItem(element)"></font-awesome-icon>
               </div>
               <div class="delete">
-                <font-awesome-icon icon="fa-solid fa-trash-can" @click="deleteItem(element.id)" />
+                <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.delete')}" icon="fa-solid fa-trash-can" @click="deleteItem(element.id)" />
               </div>
               <div class="drag-handler">
                 <font-awesome-icon icon="fa-solid fa-grip" class="fa-lg" />
@@ -205,7 +205,7 @@
           <span>{{
             $t(`editorPage.subConfig.actions.addAction.title`)
           }}</span>
-          <font-awesome-icon v-if="sourceType !== 'file'"  @click="popActionsHelp" icon="fa-solid fa-circle-question" />
+          <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.help')}" v-if="sourceType !== 'file'"  @click="popActionsHelp" icon="fa-solid fa-circle-question" />
         </div>
         <label class="action-buttons-mode-select">
           <select v-model="actionButtonsDisplayMode" :aria-label="$t(`moreSettingPage.actionButtons.title`)">
@@ -220,10 +220,10 @@
         </label>
       </div>
       <div class="horizontal-button-container">
-        <button v-for="(item, index) in columns" :key="index" @click="onButtonClick(item)" class="custom-button">
+        <button v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')" v-for="(item, index) in columns" :key="index" @click="onButtonClick(item)" class="custom-button">
           {{ item.text }}
         </button>
-        <button @click="paste" class="custom-button">
+        <button v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')" @click="paste" class="custom-button">
           {{ $t(`editorPage.subConfig.actions.pasteAction.label`) }}
         </button>
       </div>
@@ -249,10 +249,10 @@
           text-align="center"
         />
         <div class="horizontal-button-container">
-          <button @click="cancelPaste" class="custom-button">
+          <button v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')" @click="cancelPaste" class="custom-button">
             {{ $t(`editorPage.subConfig.actions.addAction.cancel`) }}
           </button>
-          <button @click="paste" class="custom-button">
+          <button v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')" @click="paste" class="custom-button">
             {{ $t(`editorPage.subConfig.actions.pasteAction.label`) }}
           </button>
         </div>

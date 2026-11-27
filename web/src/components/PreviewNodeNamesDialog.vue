@@ -27,7 +27,7 @@
       />
     </div>
     <template #footer>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
         size="small"
         plain
         type="primary"
@@ -36,7 +36,7 @@
       >
         {{ t('comparePage.nodeNames.copyAll') }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
         size="small"
         type="primary"
         class="preview-node-names-footer-button"

@@ -25,7 +25,7 @@
           <p class="add-sub-panel-title">{{ $t(`subPage.addSubTitle`) }}</p>
           <p class="add-sub-panel-title or">{{ $t(`specificWord.or`) }}</p>
           <input ref="fileInput" type="file" accept="application/json,text/json,.json" style="display: none" @change="fileChange">
-          <nut-button
+          <nut-button v-ui-action v-tooltip="{content: $t('studio.upload')}" :aria-label="$t('studio.upload')"
             class="upload-btn"
             plain
             type="primary"
@@ -34,13 +34,13 @@
             :loading="restoreIsLoading"
             @click="upload()"
           >
-            <font-awesome-icon
+            <font-awesome-icon v-tooltip="{content: $t('studio.upload')}"
               v-if="!uploadIsLoading"
               icon="fa-solid fa-file-import"
             />
             {{ $t(`subPage.import.label`) }}
           </nut-button>
-          <nut-icon name="tips" @click="importTips"></nut-icon>
+          <nut-icon v-ui-action v-tooltip="{content: $t('studio.help')}" name="tips" @click="importTips"></nut-icon>
         </div>
         <ul class="add-sub-panel-list">
           <li>
@@ -85,7 +85,7 @@
             class="drag-btn refresh"
             @click="refresh"
           >
-            <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrow-rotate-right" />
           </div>
 
           <!-- 加号 -->
@@ -96,7 +96,7 @@
             @touchend="enTa"
             @click="addSub"
           >
-            <font-awesome-icon icon="fa-solid fa-plus" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.add')}" icon="fa-solid fa-plus" />
           </div>
         </nut-drag>
       </div>
@@ -116,8 +116,8 @@
           <div class="title-wrappers">
             <p class="list-title" @click="toggleFold('sub')">
               <span class="list-title-text">{{ `${$t(`specificWord.singleSub`)  }(${filterdSubsCount})` }}</span>
-              <nut-icon v-if="!isFold('sub')" name="rect-down" size="12px"></nut-icon>
-              <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.expand')}" v-if="!isFold('sub')" name="rect-down" size="12px"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
             </p>
           </div>
 
@@ -159,8 +159,8 @@
           <div class="title-wrappers">
             <p class="list-title" @click="toggleFold('col')">
               <span class="list-title-text">{{ `${$t(`specificWord.collectionSub`)  }(${filterdColsCount})`}}</span>
-              <nut-icon v-if="!isFold('col')" name="rect-down" size="12px"></nut-icon>
-              <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.expand')}" v-if="!isFold('col')" name="rect-down" size="12px"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
             </p>
           </div>
 
@@ -211,7 +211,7 @@
           <p>{{ $t(`subPage.emptySub.desc`) }}</p>
         </template>
       </nut-empty>
-      <nut-button type="primary" @click="addSubBtnIsVisible = true">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')" type="primary" @click="addSubBtnIsVisible = true">
         {{ $t(`subPage.emptySub.btn`) }}
       </nut-button>
     </div>
@@ -234,7 +234,7 @@
           </p>
         </template>
       </nut-empty>
-      <nut-button icon="refresh" type="primary" @click="refresh">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" icon="refresh" type="primary" @click="refresh">
         {{ $t(`subPage.loadFailed.btn`) }}
       </nut-button>
       <!-- <a
@@ -249,6 +249,8 @@
 </template>
 
 <script lang="ts" setup>
+import {useStudioStore} from '@/store/studio';
+import {watchEffect as studioWatchEffect} from 'vue';
 import { Dialog } from '@nutui/nutui';
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, toRaw, watch } from "vue";
@@ -620,6 +622,10 @@ const importTips = () => {
       lockScroll: false,
     });
 };
+
+const studio=useStudioStore();
+studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.import'),icon:'file-import',run:upload},{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')}];});
+studioWatchEffect(()=>{studio.filters={options:tags,value:tag,set:setTag};});
 </script>
 
 <style lang="scss" scoped>

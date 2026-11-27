@@ -14,10 +14,10 @@
         </template>
       </nut-empty>
       <div class="link-editor-state-actions">
-        <nut-button plain shape="round" @click="loadEditorData">
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.edit')}" :aria-label="$t('studio.edit')" plain shape="round" @click="loadEditorData">
           {{ $t("sharePage.editor.loadFailed.retry") }}
         </nut-button>
-        <nut-button type="primary" shape="round" @click="router.push('/shares')">
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')" type="primary" shape="round" @click="router.push('/shares')">
           {{ $t("sharePage.editor.loadFailed.back") }}
         </nut-button>
       </div>
@@ -30,7 +30,7 @@
         :style="{ top: navBarHeight }"
       >
         <div class="editor-section-tab-list" role="tablist">
-          <button
+          <button v-tooltip="{content: $t('studio.edit')}" :aria-label="$t('studio.edit')"
             v-for="tab in SHARE_EDITOR_TABS"
             :key="tab"
             type="button"
@@ -263,7 +263,7 @@
             <template #label>
               <span class="label-with-tip" @click="ageOutputTips">
                 <span>{{ $t("ageKey.publicKey.label") }}</span>
-                <nut-icon name="tips"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
               </span>
             </template>
             <div class="age-key-field">
@@ -385,24 +385,24 @@
       </div>
 
       <div class="bottom-btn-wrapper">
-        <nut-button
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
           class="copy-btn btn"
           plain
           shape="square"
           :disabled="!form.shareUrl"
           @click="handleCopyShare"
         >
-          <font-awesome-icon icon="fa-solid fa-link" />
+          <font-awesome-icon v-tooltip="{content: $t('studio.copyContent')}" icon="fa-solid fa-link" />
           {{ $t("sharePage.createShare.copyBtn") }}
         </nut-button>
-        <nut-button
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.save')}" :aria-label="$t('studio.save')"
           class="submit-btn btn"
           type="primary"
           shape="square"
           :disabled="isSubmitting"
           @click="handleSubmit"
         >
-          <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+          <font-awesome-icon v-tooltip="{content: $t('studio.save')}" icon="fa-solid fa-floppy-disk" />
           {{ submitButtonLabel }}
         </nut-button>
       </div>

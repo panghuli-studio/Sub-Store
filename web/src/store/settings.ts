@@ -206,7 +206,7 @@ const normalizeEditorGroupingMode = (
     return appearanceSetting.editorGroupingMode;
   }
 
-  return getCachedEditorGroupingMode() ?? "edit-only";
+  return getCachedEditorGroupingMode() ?? "always";
 };
 
 export const useSettingsStore = defineStore("settingsStore", {
@@ -240,7 +240,7 @@ export const useSettingsStore = defineStore("settingsStore", {
         light: "light",
       },
       appearanceSetting: {
-        isSimpleMode: getCachedSimpleMode() ?? true,
+        isSimpleMode: getCachedSimpleMode() ?? false,
         isLeftRight: false,
         isDefaultIcon: false,
         isIconColor: false,
@@ -250,7 +250,7 @@ export const useSettingsStore = defineStore("settingsStore", {
         isEditorCommon: true,
         editorCommonDisplayMode: "expanded",
         manualSubscriptionsDisplayMode: "collapsed",
-        editorGroupingMode: getCachedEditorGroupingMode() ?? "edit-only",
+        editorGroupingMode: getCachedEditorGroupingMode() ?? "always",
         actionButtonsDisplayMode: "responsive",
         isSimpleReicon: false,
         isSubItemMenuFold: true,

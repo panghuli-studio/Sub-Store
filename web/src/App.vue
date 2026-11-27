@@ -1,8 +1,8 @@
 <template>
   <!-- <GlobalNotify /> -->
   <NavBar />
-  <SideBar v-show="shouldShowSideBar" />
-  <main class="page-body">
+  <StudioNavigation />
+  <main class="page-body studio-page" :class="{'studio-narrow':isWideScreenNarrowModeActive}" :data-page="route.path">
     <router-view />
   </main>
   <LogsOverlay />
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 // import GlobalNotify from '@/components/GlobalNotify.vue';
-import SideBar from "@/components/SideBar.vue";
+import StudioNavigation from "@/components/studio/StudioNavigation.vue";
 import NavBar from "@/components/NavBar.vue";
 import MagicPathDialog from "@/components/MagicPathDialog.vue";
 import LogsOverlay from "@/components/LogsOverlay.vue";
@@ -37,7 +37,7 @@ const globalStore = useGlobalStore();
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
-const { shouldShowSideBar } = useWideScreenNarrowMode();
+const { shouldShowSideBar,isWideScreenNarrowModeActive } = useWideScreenNarrowMode();
 
 const { subs, flows } = storeToRefs(subsStore);
 

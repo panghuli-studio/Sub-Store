@@ -1,4 +1,6 @@
 <template>
+  <StudioToolbar v-if="['/subs','/files','/sync','/shares','/archives'].includes(route.path)"/>
+  <template v-else-if="route.path!=='/my'&&!/^\/(edit|settings)\//.test(route.path)&&!['/aboutUs','/logs','/preview'].includes(route.path)">
   <!-- isPWA 时候顶部边距 -->
   <div v-if="isPWA" class="pwa_top_padding" />
   <div
@@ -16,44 +18,44 @@
       >
         <template #left>
           <div v-if="isLogsOverlayOpen" class="nav-leading-placeholder" />
-          <button
+          <button v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')"
             v-else-if="isNeedBack"
             type="button"
             class="nav-leading-button icon-back"
             @click.stop="back"
           >
-            <font-awesome-icon
+            <font-awesome-icon v-tooltip="{content: $t('studio.close')}"
               class="icon-back-icon"
               icon="fa-solid fa-arrow-left"
             />
           </button>
           <div v-else :class="leftIconClass" @click.stop="back"></div>
           <div v-if="!isLogsOverlayOpen" class="icon-group">
-            <button
+            <button v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')"
               v-if="showRefreshButton"
               type="button"
               @click.stop="refresh"
               class="navBar-left-icon navBar-left-icon--refresh"
               :style="{ left: navLeftButtonLeft.refresh }"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: $t('studio.reload')}"
                 class="icon fa-arrow-rotate-right"
                 icon="fa-solid fa-arrow-rotate-right"
               />
             </button>
-            <button
+            <button v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')"
               v-if="showAddButton"
               type="button"
               @click.stop="add(route)"
               class="navBar-left-icon navBar-left-icon--add"
               :style="{ left: navLeftButtonLeft.add }"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: $t('studio.add')}"
                 class="icon fa-plus"
                 icon="fa-solid fa-plus"
               />
             </button>
-            <button
+            <button v-tooltip="{content: t('navBar.listSearch.open')}"
               v-if="showSearchButton"
               type="button"
               @click.stop="openListSearch"
@@ -63,7 +65,7 @@
               :aria-label="t('navBar.listSearch.open')"
               :title="t('navBar.listSearch.open')"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: t('navBar.listSearch.open')}"
                 class="icon"
                 icon="fa-solid fa-magnifying-glass"
               />
@@ -83,21 +85,21 @@
               :aria-label="t('navBar.listSearch.placeholder')"
               @keydown.esc.stop.prevent="closeListSearch"
             />
-            <button
+            <button v-tooltip="{content: listSearchQuery ? t('navBar.listSearch.clear') : t('navBar.listSearch.close')}"
               type="button"
               class="nav-search-clear"
               :aria-label="listSearchQuery ? t('navBar.listSearch.clear') : t('navBar.listSearch.close')"
               :title="listSearchQuery ? t('navBar.listSearch.clear') : t('navBar.listSearch.close')"
               @click.stop="handleSearchCloseButton"
             >
-              <font-awesome-icon icon="fa-solid fa-circle-xmark" />
+              <font-awesome-icon v-tooltip="{content: listSearchQuery ? t('navBar.listSearch.clear') : t('navBar.listSearch.close')}" icon="fa-solid fa-circle-xmark" />
             </button>
           </div>
         </template>
 
         <template #right>
           <template v-if="!isLogsOverlayOpen">
-            <button
+            <button v-tooltip="{content: simpleModeToggleTitle}"
               type="button"
               v-if="appearanceSetting.isSimpleMode"
               class="navBar-right-button"
@@ -106,13 +108,13 @@
               :title="simpleModeToggleTitle"
               @click.stop="setSimpleMode(false)"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: simpleModeToggleTitle}"
                 class="navBar-right-icon navBar-right-icon--simple"
                 icon="fa-solid fa-toggle-on"
                 :title="simpleModeToggleTitle"
               />
             </button>
-            <button
+            <button v-tooltip="{content: simpleModeToggleTitle}"
               type="button"
               v-else
               class="navBar-right-button"
@@ -121,26 +123,26 @@
               :title="simpleModeToggleTitle"
               @click.stop="setSimpleMode(true)"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: simpleModeToggleTitle}"
                 class="navBar-right-icon navBar-right-icon--simple"
                 icon="fa-solid fa-toggle-off"
                 :title="simpleModeToggleTitle"
               />
             </button>
-            <button
+            <button v-tooltip="{content: $t('studio.layout')}" :aria-label="$t('studio.layout')"
               v-if="showWideScreenNarrowModeToggle"
               type="button"
               class="navBar-right-button"
               :style="{ right: navRightButtonRight.navigation }"
               @click.stop="handleWideScreenNarrowModeToggle"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: wideScreenNarrowModeToggleTitle}"
                 class="navBar-right-icon"
                 :icon="isWideScreenNarrowModeActive ? 'fa-solid fa-mobile-screen-button' : 'fa-solid fa-desktop'"
                 :title="wideScreenNarrowModeToggleTitle"
               />
             </button>
-            <button
+            <button v-tooltip="{content: $t('studio.layout')}" :aria-label="$t('studio.layout')"
               v-if="showListViewToggle"
               type="button"
               class="navBar-right-button"
@@ -149,14 +151,14 @@
               :aria-disabled="isListViewModeLocked ? 'true' : 'false'"
               @click.stop="handleListViewModeToggle"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: listViewModeToggleTitle}"
                 class="navBar-right-icon"
                 :class="{ 'is-disabled': isListViewModeLocked }"
                 :icon="effectiveListViewMode === 'dual-column' ? 'fa-solid fa-table-columns' : 'fa-solid fa-list'"
                 :title="listViewModeToggleTitle"
               />
             </button>
-            <button
+            <button v-tooltip="{content: t('logsPage.floating.open')}" :aria-label="t('logsPage.floating.open')"
               v-if="showLogsButton"
               type="button"
               class="navBar-right-button"
@@ -164,7 +166,7 @@
               @click.stop="openLogsOverlay"
               :title="t('logsPage.floating.open')"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: t('logsPage.floating.open')}"
                 class="navBar-right-icon"
                 icon="fa-solid fa-file-lines"
                 :title="t('logsPage.floating.open')"
@@ -176,8 +178,10 @@
     </nav>
   </div>
 </template>
+</template>
 
 <script lang="ts" setup>
+import StudioToolbar from '@/components/studio/StudioToolbar.vue';
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";

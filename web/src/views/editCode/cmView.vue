@@ -15,14 +15,14 @@
     >
       <div v-if="openPanel" class="cm-toolbar-actions">
         <div class="cm-toolbar-left">
-          <button
+          <button v-tooltip="{content: fullscreenTitle}"
             v-if="isToolbarActionEnabled('fullscreen') && enableFullscreen"
             type="button"
             :title="fullscreenTitle"
             :aria-label="fullscreenTitle"
             @click="toggleFullscreen"
           >
-            <font-awesome-icon
+            <font-awesome-icon v-tooltip="{content: fullscreenTitle}"
               :icon="
                 isFullscreen
                   ? 'fa-solid fa-minimize'
@@ -30,14 +30,14 @@
               "
             />
           </button>
-          <button
+          <button v-tooltip="{content: importFileTitle}"
             v-if="canImportFile"
             type="button"
             :title="importFileTitle"
             :aria-label="importFileTitle"
             @click="openFilePicker"
           >
-            <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" />
+            <font-awesome-icon v-tooltip="{content: importFileTitle}" icon="fa-solid fa-cloud-arrow-up" />
           </button>
           <input
             v-if="canImportFile"
@@ -48,7 +48,7 @@
           />
         </div>
         <div class="cm-toolbar-right">
-          <button
+          <button v-tooltip="{content: languageDetectionTitle}"
             v-if="
               isToolbarActionEnabled('language-detect') &&
               isLanguageDetectionActionVisible
@@ -95,29 +95,29 @@
               </option>
             </select>
           </span>
-          <button v-if="isToolbarActionEnabled('undo')" @click="undoCode">
+          <button v-tooltip="{content: $t('studio.undo')}" :aria-label="$t('studio.undo')" v-if="isToolbarActionEnabled('undo')" @click="undoCode">
             <img :src="undoimg" />
           </button>
-          <button v-if="isToolbarActionEnabled('redo')" @click="redoCode">
+          <button v-tooltip="{content: $t('studio.redo')}" :aria-label="$t('studio.redo')" v-if="isToolbarActionEnabled('redo')" @click="redoCode">
             <img :src="redoimg" />
           </button>
-          <button
+          <button v-tooltip="{content: $t('studio.format')}" :aria-label="$t('studio.format')"
             v-if="isToolbarActionEnabled('format') && canFormatActiveLanguage"
             :disabled="isFormatting"
             @click="formatCode"
           >
             <img :src="format" />
           </button>
-          <button v-if="isToolbarActionEnabled('search')" @click="searchs">
+          <button v-tooltip="{content: $t('studio.search')}" :aria-label="$t('studio.search')" v-if="isToolbarActionEnabled('search')" @click="searchs">
             <img :src="searchimg" />
           </button>
-          <button v-if="isToolbarActionEnabled('copy')" @click="copyText">
+          <button v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')" v-if="isToolbarActionEnabled('copy')" @click="copyText">
             <img :src="copyimg" />
           </button>
-          <button v-if="isToolbarActionEnabled('delete')" @click="delAllCode">
+          <button v-tooltip="{content: $t('studio.clear')}" :aria-label="$t('studio.clear')" v-if="isToolbarActionEnabled('delete')" @click="delAllCode">
             <img :src="del" />
           </button>
-          <button v-if="isToolbarActionEnabled('paste')" @click="pasteNav">
+          <button v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')" v-if="isToolbarActionEnabled('paste')" @click="pasteNav">
             <img :src="paste" />
           </button>
         </div>
@@ -135,7 +135,7 @@
       >
         {{ Length }} &nbsp;
       </span>
-      <button v-if="canToggleToolbarPanel" @click="setPanel">
+      <button v-tooltip="{content: $t('studio.expand')}" :aria-label="$t('studio.expand')" v-if="canToggleToolbarPanel" @click="setPanel">
         <img :src="more" />
       </button>
     </div>

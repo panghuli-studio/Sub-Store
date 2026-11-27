@@ -103,3 +103,6 @@ library.add(faMobileScreenButton);
 library.add(faBoxArchive);
 library.add(faShare);
 library.add(faMagnifyingGlass);
+
+import {fas} from '@fortawesome/free-solid-svg-icons';
+library.add(fas);

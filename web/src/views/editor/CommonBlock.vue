@@ -6,15 +6,15 @@
           <p>
             {{ $t(`editorPage.subConfig.commonOptions.label`) }}
           </p>
-          <nut-icon v-if="!isFold" name="rect-down" size="12px"></nut-icon>
-          <nut-icon v-else name="rect-right" size="12px"></nut-icon>
+          <nut-icon v-tooltip="{content: $t('studio.expand')}" v-if="!isFold" name="rect-down" size="12px"></nut-icon>
+          <nut-icon v-tooltip="{content: $t('studio.expand')}" v-else name="rect-right" size="12px"></nut-icon>
         </div>
         <EditorCommonTips />
       </div>
     </div>
     <nut-form v-if="!isFold" class="form common-options-form">
       <div class="quick-option-palette">
-        <button
+        <button v-tooltip="{content: $t('studio.options')}" :aria-label="$t('studio.options')"
           v-for="option in quickOptions"
           :key="option.key"
           type="button"
@@ -51,7 +51,7 @@
               {{ $t(`editorPage.subConfig.commonOptions${option.localePath}.options.${selectOption.labelKey}`) }}
             </option>
           </select>
-          <nut-icon name="rect-down" class="quick-option-select-icon"></nut-icon>
+          <nut-icon v-tooltip="{content: $t('studio.expand')}" name="rect-down" class="quick-option-select-icon"></nut-icon>
         </div>
         <div
           v-else
@@ -70,13 +70,13 @@
             </nut-radio>
           </nut-radiogroup>
         </div>
-        <button
+        <button v-tooltip="{content: $t('editorPage.subConfig.pop.deleteConfirm')}"
           type="button"
           class="quick-option-remove"
           :aria-label="$t('editorPage.subConfig.pop.deleteConfirm')"
           @click="removeQuickOption(option.key)"
         >
-          <nut-icon name="mask-close" />
+          <nut-icon v-tooltip="{content: $t('editorPage.subConfig.pop.deleteConfirm')}" name="mask-close" />
         </button>
       </nut-form-item>
     </nut-form>

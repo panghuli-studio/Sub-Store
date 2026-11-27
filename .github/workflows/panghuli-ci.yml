@@ -49,18 +49,11 @@ jobs:
           pnpm bundle:esbuild
           test -s dist/sub-store.bundle.js
 
-      - name: Fetch pinned front-end
-        run: |
-          . .github/panghuli/frontend.env
-          curl -fsSL -o dist.zip \
-            "https://github.com/sub-store-org/Sub-Store-Front-End/releases/download/${FRONTEND_VERSION}/dist.zip"
-          echo "${FRONTEND_SHA256}  dist.zip" | sha256sum -c -
-          unzip -q dist.zip -d frontend-unpacked
-          # dist.zip wraps its files in a dist/ folder; copy whichever holds index.html.
-          src=$(dirname "$(find frontend-unpacked -name index.html -print -quit)")
-          test -n "$src"
-          cp -r "$src" frontend
-          echo "FRONTEND_VERSION=${FRONTEND_VERSION}" >> "$GITHUB_ENV"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.9
+      - name: Build approved front-end
+        run: .github/panghuli/build-frontend.sh
 
       - name: Fetch DB-IP City Lite
         run: .github/panghuli/fetch-dbip.sh >> "$GITHUB_ENV"

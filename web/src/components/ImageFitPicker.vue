@@ -3,7 +3,7 @@
     <template #label>
       <span class="image-fit-label">
         {{ labelText }}
-        <nut-icon
+        <nut-icon v-ui-action v-tooltip="{content: $t(`imageFit.tips.title`)}"
           name="tips"
           size="14"
           role="button"

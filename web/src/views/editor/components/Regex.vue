@@ -71,7 +71,7 @@
         "
         v-model="input2"
       />
-      <font-awesome-icon @click="addItem" icon="fa-solid fa-location-arrow" />
+      <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.add')}" @click="addItem" icon="fa-solid fa-location-arrow" />
     </div>
   </div>
 </template>

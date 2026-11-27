@@ -94,13 +94,13 @@
         </div>
       </div>
       <div class="radio-wrapper options-radio rdo-type-option">
-        <p class="des-label" style="cursor: pointer" @click="rdoTypeInfo">解析类型(IPv6 兼容 IP4P <font-awesome-icon icon="fa-solid fa-circle-question"/>)</p>
+        <p class="des-label" style="cursor: pointer" @click="rdoTypeInfo">解析类型(IPv6 兼容 IP4P <font-awesome-icon v-tooltip="{content: $t('studio.help')}" icon="fa-solid fa-circle-question"/>)</p>
         <nut-radiogroup direction="horizontal" v-model="rdoType">
           <nut-radio v-for="(key, index) in rdoTypeOpt" :label="key" :key="index"
             >{{
               $t(`editorPage.subConfig.nodeActions['${type}'].types[${index}]`)
             }}
-            <!-- <font-awesome-icon v-if="key === 'IPv6'" @click="rdoTypeInfo" icon="fa-solid fa-circle-question"/> -->
+            <!-- <font-awesome-icon v-ui-action v-if="key === 'IPv6'" @click="rdoTypeInfo" icon="fa-solid fa-circle-question"/> -->
           </nut-radio>
         </nut-radiogroup>
       </div>
@@ -145,7 +145,7 @@
             <span>识别为</span>
             <img :src="tw" alt="">
             <span>时</span>
-            <nut-icon name="tips" size="12px"></nut-icon>
+            <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips" size="12px"></nut-icon>
         </p>
         <nut-radiogroup direction="horizontal" v-model="foTw">
           <nut-radio v-for="(key, index) in foTwOpt" :label="key" :key="index"

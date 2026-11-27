@@ -84,47 +84,47 @@
           </div>
           <div class="api-item-right">
             <template v-if="editingApiName === api.name">
-              <button
+              <button v-tooltip="{content: $t(`apiSettingPage.apiList.saveName`)}" :aria-label="$t(`apiSettingPage.apiList.saveName`)"
                 type="button"
                 class="api-action-btn"
                 :title="$t(`apiSettingPage.apiList.saveName`)"
                 @click.stop="saveApiName(api)"
               >
-                <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+                <font-awesome-icon v-tooltip="{content: $t(`apiSettingPage.apiList.saveName`)}" icon="fa-solid fa-floppy-disk" />
               </button>
-              <button
+              <button v-tooltip="{content: $t(`apiSettingPage.apiList.cancelEditName`)}" :aria-label="$t(`apiSettingPage.apiList.cancelEditName`)"
                 type="button"
                 class="api-action-btn"
                 :title="$t(`apiSettingPage.apiList.cancelEditName`)"
                 @click.stop="cancelEditApiName"
               >
-                <font-awesome-icon icon="fa-solid fa-ban" />
+                <font-awesome-icon v-tooltip="{content: $t(`apiSettingPage.apiList.cancelEditName`)}" icon="fa-solid fa-ban" />
               </button>
             </template>
             <template v-else>
-              <button
+              <button v-tooltip="{content: $t(`apiSettingPage.apiList.copy`)}" :aria-label="$t(`apiSettingPage.apiList.copy`)"
                 type="button"
                 class="api-action-btn"
                 :title="$t(`apiSettingPage.apiList.copy`)"
                 @click.stop="copyApi(api)"
               >
-                <font-awesome-icon icon="fa-solid fa-clone" />
+                <font-awesome-icon v-tooltip="{content: $t(`apiSettingPage.apiList.copy`)}" icon="fa-solid fa-clone" />
               </button>
-              <button
+              <button v-tooltip="{content: $t(`apiSettingPage.apiList.editName`)}" :aria-label="$t(`apiSettingPage.apiList.editName`)"
                 type="button"
                 class="api-action-btn"
                 :title="$t(`apiSettingPage.apiList.editName`)"
                 @click.stop="startEditApiName(api)"
               >
-                <font-awesome-icon icon="fa-solid fa-pen-nib" />
+                <font-awesome-icon v-tooltip="{content: $t(`apiSettingPage.apiList.editName`)}" icon="fa-solid fa-pen-nib" />
               </button>
-              <button
+              <button v-tooltip="{content: $t(`apiSettingPage.apiList.delete`)}" :aria-label="$t(`apiSettingPage.apiList.delete`)"
                 type="button"
                 class="api-action-btn"
                 :title="$t(`apiSettingPage.apiList.delete`)"
                 @click.stop="deleteApi(api.name)"
               >
-                <font-awesome-icon icon="fa-solid fa-xmark" />
+                <font-awesome-icon v-tooltip="{content: $t(`apiSettingPage.apiList.delete`)}" icon="fa-solid fa-xmark" />
               </button>
             </template>
           </div>
@@ -185,14 +185,14 @@
             </div>
           </div>
         </div>
-        <nut-button
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')"
           class="save-btn"
           type="primary"
           :disabled="!addForm.name || !addForm.url"
           :loading="checkingAPI"
           @click="addApiHandler"
         >
-          <font-awesome-icon
+          <font-awesome-icon v-tooltip="{content: $t('studio.save')}"
             v-if="!checkingAPI"
             icon="fa-solid fa-floppy-disk"
           />

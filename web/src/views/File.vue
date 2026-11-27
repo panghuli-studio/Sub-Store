@@ -25,7 +25,7 @@
           <p class="add-sub-panel-title">{{ $t(`filePage.addFileTitle`) }}</p>
           <p class="add-sub-panel-title or">{{ $t(`specificWord.or`) }}</p>
           <input type="file" ref="fileInput" accept="application/json,text/json,.json" @change="fileChange" style="display: none">
-          <nut-button
+          <nut-button v-ui-action v-tooltip="{content: $t('studio.upload')}" :aria-label="$t('studio.upload')"
             class="upload-btn"
             plain
             type="primary"
@@ -34,13 +34,13 @@
             :loading="restoreIsLoading"
             @click="upload()"
           >
-            <font-awesome-icon
+            <font-awesome-icon v-tooltip="{content: $t('studio.upload')}"
               icon="fa-solid fa-file-import"
               v-if="!uploadIsLoading"
             />
             {{ $t(`subPage.import.label`) }}
           </nut-button>
-          <nut-icon name="tips" @click="importTips"></nut-icon>
+          <nut-icon v-ui-action v-tooltip="{content: $t('studio.help')}" name="tips" @click="importTips"></nut-icon>
         </div>
         <ul class="add-sub-panel-list">
           <li>
@@ -86,7 +86,7 @@
             class="drag-btn refresh"
             @click="refresh"
           >
-            <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrow-rotate-right" />
           </div>
 
           <!-- 加号 -->
@@ -98,13 +98,14 @@
             class="router-link"
           >
             <div class="drag-btn">
-              <font-awesome-icon icon="fa-solid fa-plus" />
+              <font-awesome-icon v-tooltip="{content: $t('studio.add')}" icon="fa-solid fa-plus" />
             </div>
           </div>
         </nut-drag>
       </div>
     </Teleport>
 
+    <nut-tabs v-model="fileCategory" class="studio-file-tabs"><nut-tabpane :title="t('studio.config')" pane-key="config"/><nut-tabpane :title="t('studio.nodes')" pane-key="nodes"/><nut-tabpane :title="t('studio.other')" pane-key="other"/></nut-tabs>
     <!-- 页面内容 -->
     <!-- 有数据 -->
     <div class="subs-list-wrapper" :class="{ 'dual-column-mode': isDualColumnMode }">
@@ -160,7 +161,7 @@
         </template>
       </nut-empty>
       <!-- <router-link to="/edit/files/UNTITLED" class="router-link"> -->
-        <nut-button type="primary" @click="addSubBtnIsVisible = true">
+        <nut-button v-ui-action v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')" type="primary" @click="addSubBtnIsVisible = true">
           {{ $t(`filePage.emptySub.btn`) }}
         </nut-button>
       <!-- </router-link> -->
@@ -184,7 +185,7 @@
           </p>
         </template>
       </nut-empty>
-      <nut-button icon="refresh" type="primary" @click="refresh">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" icon="refresh" type="primary" @click="refresh">
         {{ $t(`subPage.loadFailed.btn`) }}
       </nut-button>
       <!-- <a
@@ -199,6 +200,9 @@
 </template>
 
 <script lang="ts" setup>
+import {getFileCategory} from '@/utils/fileCategory';
+import {useStudioStore} from '@/store/studio';
+import {watchEffect as studioWatchEffect} from 'vue';
 import { storeToRefs } from "pinia";
 import { ref, toRaw, onMounted, computed, watch } from "vue";
 import draggable from "vuedraggable";
@@ -246,6 +250,7 @@ const editFile = () => {
   addSubBtnIsVisible.value = true;
 };
 
+const fileCategory=ref('config');
 const { env } = useBackend();
 const { showNotify } = useAppNotifyStore();
 const subApi = useSubsApi();
@@ -477,12 +482,16 @@ const shouldShowElementByTag = (element) => {
   return element.tag?.includes(tag.value);
 };
 const shouldShowElement = (element) => {
-  return shouldShowElementByTag(element)
+  return getFileCategory(element)===fileCategory.value && shouldShowElementByTag(element)
     && listItemMatchesSearch(element, listSearchStore.normalizedQuery, {
       includeRemark: shouldSearchListRemark(appearanceSetting.value),
     });
 };
 const filteredFiles = useFilteredDraggableList(files, shouldShowElement);
+
+const studio=useStudioStore();
+studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.import'),icon:'file-import',run:upload}];});
+studioWatchEffect(()=>{studio.filters={options:tags,value:tag,set:setTag};});
 </script>
 
 <style lang="scss" scoped>

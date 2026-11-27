@@ -5,7 +5,7 @@
       class="editor-section-tabs"
       :style="{ top: navBarHeight }"
     >
-      <div class="editor-section-tab-list" role="tablist">
+      <div class="editor-section-tab-list" role="tablist" v-editor-tabs>
         <button
           v-for="tab in SYNC_EDITOR_TABS"
           :key="tab"
@@ -13,7 +13,7 @@
           class="editor-section-tab"
           :class="{ current: activeEditorTab === tab }"
           role="tab"
-          :aria-selected="activeEditorTab === tab"
+          :aria-selected="activeEditorTab === tab" :tabindex="activeEditorTab===tab?0:-1"
           @click="activeEditorTab = tab"
         >
           {{ $t(`editorPage.subConfig.editorTabs.${tab}`) }}
@@ -172,7 +172,7 @@
           <template #label>
             <div class="form-label-with-tips" @click="ageOutputTips">
               <p>{{ $t("ageKey.publicKey.label") }}</p>
-              <nut-icon name="tips"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
             </div>
           </template>
           <div class="age-key-field">
@@ -192,7 +192,7 @@
           <template #label>
             <div class="label" @click="uploadTips">
               <p>{{ $t(`syncPage.addArtForm.upload.label`) }}</p>
-              <nut-icon name="tips"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.upload')}" name="tips"></nut-icon>
             </div>
           </template>
           <div class="switch-wrapper">
@@ -204,7 +204,7 @@
           <template #label>
             <div class="form-label-with-tips" @click="cronTips">
               <p>{{ $t(`syncPage.addArtForm.cron.label`) }}</p>
-              <nut-icon name="tips"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
             </div>
           </template>
           <nut-input
@@ -228,7 +228,7 @@
             <template #label>
               <div class="label" @click="includeUnsupportedProxyTips">
                 <p>{{ $t(`syncPage.addArtForm.includeUnsupportedProxy.label`) }}</p>
-                <nut-icon name="tips"></nut-icon>
+                <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
               </div>
             </template>
             <div class="switch-wrapper">
@@ -281,13 +281,13 @@
     </div>
 
     <div class="bottom-btn-wrapper">
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.save')}" :aria-label="$t('studio.save')"
         @click="submit"
         class="submit-btn btn"
         type="primary"
         shape="square"
       >
-        <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+        <font-awesome-icon v-tooltip="{content: $t('studio.save')}" icon="fa-solid fa-floppy-disk" />
         {{ $t("editorPage.subConfig.btn.save") }}
       </nut-button>
     </div>

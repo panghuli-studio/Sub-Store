@@ -1,5 +1,5 @@
 <template>
-  <button
+  <button v-tooltip="{content: t('navBar.langSwitcher.cellTitle')}"
     type="button"
     :class="[
       'language-switch-button',
@@ -9,7 +9,7 @@
     :title="t('navBar.langSwitcher.cellTitle')"
     @click.stop="showLangSwitchPopup = true"
   >
-    <font-awesome-icon
+    <font-awesome-icon v-tooltip="{content: t('navBar.langSwitcher.cellTitle')}"
       class="language-switch-button__icon"
       icon="fa-solid fa-language"
     />
@@ -79,6 +79,7 @@ const changeLang = (type: SupportedLocale) => {
   localStorage.setItem("locale", type);
   showLangSwitchPopup.value = false;
 };
+defineExpose({open:()=>{showLangSwitchPopup.value=true}});
 </script>
 
 <style lang="scss">

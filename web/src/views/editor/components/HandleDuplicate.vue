@@ -37,7 +37,7 @@
         "
         v-model="input"
       />
-      <font-awesome-icon @click="addItem" icon="fa-solid fa-location-arrow" />
+      <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.add')}" @click="addItem" icon="fa-solid fa-location-arrow" />
     </div>
     <p class="des-label">
       {{ $t(`editorPage.subConfig.nodeActions['${type}'].action.des`) }}

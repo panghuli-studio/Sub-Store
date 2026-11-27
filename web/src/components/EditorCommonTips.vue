@@ -1,12 +1,12 @@
 <template>
-  <button
+  <button v-tooltip="{content: t('editorPage.commonTips.open')}"
     type="button"
     class="editor-common-tips-button"
     :aria-label="t('editorPage.commonTips.open')"
     :title="t('editorPage.commonTips.open')"
     @click.stop="openTips"
   >
-    <font-awesome-icon icon="fa-solid fa-circle-question" />
+    <font-awesome-icon v-tooltip="{content: t('editorPage.commonTips.open')}" icon="fa-solid fa-circle-question" />
   </button>
 </template>
 

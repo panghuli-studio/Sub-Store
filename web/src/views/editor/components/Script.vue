@@ -1,7 +1,11 @@
 <template>
   <div class="editor-action-card">
     <div class="type-row">
-      <button
+      <button v-tooltip="{content:
+          isContentFolded
+            ? $t('moreSettingPage.editorDisplayMode.expanded')
+            : $t('moreSettingPage.editorDisplayMode.collapsed')
+        }"
         type="button"
         class="content-fold-toggle"
         :aria-expanded="!isContentFolded"
@@ -12,7 +16,11 @@
         "
         @click="toggleContentFold"
       >
-        <nut-icon
+        <nut-icon v-tooltip="{content:
+          isContentFolded
+            ? $t('moreSettingPage.editorDisplayMode.expanded')
+            : $t('moreSettingPage.editorDisplayMode.collapsed')
+        }"
           :name="isContentFolded ? 'rect-right' : 'rect-down'"
           size="12px"
         />
@@ -62,13 +70,13 @@
     <div class="input-wrapper-title">
       <!-- 参数区域展开开关 -->
       <div class="title-label">
-        <button
+        <button v-tooltip="{content: $t('studio.expand')}" :aria-label="$t('studio.expand')"
           class="params-toggle"
           type="button"
           :aria-expanded="showKeyValue"
           @click="toggleShowKeyValue"
         >
-          <nut-icon
+          <nut-icon v-tooltip="{content: $t('studio.expand')}"
             class="params-toggle-icon"
             :name="showKeyValue ? 'rect-down' : 'rect-right'"
             size="12px"
@@ -83,7 +91,7 @@
             }}
           </span>
         </button>
-        <font-awesome-icon
+        <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.edit')}"
           class="icon"
           icon="fa-solid fa-circle-question"
           @click.stop="showParamsEditTips"
@@ -92,14 +100,14 @@
       <!-- 无缓存开关 - 仅在link模式时显示 -->
       <div v-if="value.mode === 'link'" class="title-label">
         <nut-checkbox v-model="params.noCache" class="my-switch" />
-        <button
+        <button v-tooltip="{content: $t('studio.options')}" :aria-label="$t('studio.options')"
           class="switch-label"
           type="button"
           @click="toggleNoCache"
         >
           {{ $t(`editorPage.subConfig.nodeActions['${type}'].noCache`) }}
         </button>
-        <font-awesome-icon
+        <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.help')}"
           class="icon"
           icon="fa-solid fa-circle-question"
           @click.stop="showNoCacheTips"
@@ -107,14 +115,14 @@
       </div>
       <div v-if="value.mode === 'link'" class="title-label">
         <nut-checkbox v-model="params.insecure" class="my-switch" />
-        <button
+        <button v-tooltip="{content: $t('studio.options')}" :aria-label="$t('studio.options')"
           class="switch-label"
           type="button"
           @click="toggleInsecure"
         >
           {{ $t(`editorPage.subConfig.nodeActions['${type}'].insecure`) }}
         </button>
-        <font-awesome-icon
+        <font-awesome-icon v-ui-action v-tooltip="{content: $t('studio.help')}"
           class="icon"
           icon="fa-solid fa-circle-question"
           @click.stop="showInsecureTips"

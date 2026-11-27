@@ -32,7 +32,7 @@
 
     <div class="checkbox-row">
       <nut-checkbox v-model="includeUnsupportedProxy" class="my-switch" />
-      <button
+      <button v-tooltip="{content: $t('studio.options')}" :aria-label="$t('studio.options')"
         class="checkbox-label"
         type="button"
         @click="toggleIncludeUnsupportedProxy"
@@ -43,12 +43,12 @@
           )
         }}
       </button>
-      <button
+      <button v-tooltip="{content: $t('studio.help')}" :aria-label="$t('studio.help')"
         class="checkbox-tip"
         type="button"
         @click.stop="includeUnsupportedProxyTips"
       >
-        <nut-icon class="checkbox-info" name="tips" />
+        <nut-icon v-tooltip="{content: $t('studio.help')}" class="checkbox-info" name="tips" />
       </button>
     </div>
 

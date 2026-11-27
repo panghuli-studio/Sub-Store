@@ -1,6 +1,78 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { parse, compileScript, compileTemplate } from 'vue/compiler-sfc';
-const root='src';const baselinePath='eslint.design-baseline.json';const baseline=fs.existsSync(baselinePath)?JSON.parse(fs.readFileSync(baselinePath,'utf8')):{};const actual={};const issues=[];
-function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())walk(file);else if(file.endsWith('.vue')){const source=fs.readFileSync(file,'utf8');const parsed=parse(source,{filename:file});if(parsed.errors.length)issues.push(...parsed.errors.map(String));try{if(parsed.descriptor.script||parsed.descriptor.scriptSetup)compileScript(parsed.descriptor,{id:file});const template=compileTemplate({source:parsed.descriptor.template?.content||'',filename:file,id:file,compilerOptions:{expressionPlugins:['typescript']}});issues.push(...template.errors.map(String));}catch(e){issues.push(file+': '+e.message)}const counts={};for(const tag of ['button','input','select','table','label','svg']){const count=(parsed.descriptor.template?.content.match(new RegExp('<'+tag+'(?=[\\s>])','g'))||[]).length;if(count)counts[tag]=count;}if(Object.keys(counts).length)actual[file]=counts;}}}
-walk(root);if(process.argv.includes('--init')){fs.writeFileSync(baselinePath,JSON.stringify(actual,null,2)+'\n');console.log('Recorded upstream UI baseline');}else{for(const [file,counts]of Object.entries(actual))for(const [tag,count]of Object.entries(counts))if(count>(baseline[file]?.[tag]||0))issues.push(`${file}: new native ${tag} (${count} > ${baseline[file]?.[tag]||0}); use the existing NutUI components`);if(issues.length){console.error(issues.join('\n'));process.exitCode=1}else console.log('Vue syntax and UI baseline passed');}
+import fs from "node:fs";
+import path from "node:path";
+import { parse, compileScript, compileTemplate } from "vue/compiler-sfc";
+const root = "src";
+const baselinePath = "eslint.design-baseline.json";
+const baseline = fs.existsSync(baselinePath)
+  ? JSON.parse(fs.readFileSync(baselinePath, "utf8"))
+  : {};
+const actual = {};
+const issues = [];
+function walk(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(file);
+    else if (file.endsWith(".vue")) {
+      const source = fs.readFileSync(file, "utf8");
+      const parsed = parse(source, { filename: file });
+      if (parsed.errors.length)
+        issues.push(
+          ...parsed.errors.map(
+            (error) =>
+              file + ": " + error.message + " at " + error.loc?.start.line,
+          ),
+        );
+      try {
+        if (parsed.descriptor.script || parsed.descriptor.scriptSetup)
+          compileScript(parsed.descriptor, { id: file });
+        const template = compileTemplate({
+          source: parsed.descriptor.template?.content || "",
+          filename: file,
+          id: file,
+          compilerOptions: { expressionPlugins: ["typescript"] },
+        });
+        issues.push(
+          ...template.errors.map(
+            (error) =>
+              file + ": " + error.message + " at " + error.loc?.start.line,
+          ),
+        );
+      } catch (e) {
+        issues.push(file + ": " + e.message);
+      }
+      const counts = {};
+      for (const tag of [
+        "button",
+        "input",
+        "select",
+        "table",
+        "label",
+        "svg",
+      ]) {
+        const count = (
+          parsed.descriptor.template?.content.match(
+            new RegExp("<" + tag + "(?=[\\s>])", "g"),
+          ) || []
+        ).length;
+        if (count) counts[tag] = count;
+      }
+      if (Object.keys(counts).length) actual[file] = counts;
+    }
+  }
+}
+walk(root);
+if (process.argv.includes("--init")) {
+  fs.writeFileSync(baselinePath, JSON.stringify(actual, null, 2) + "\n");
+  console.log("Recorded upstream UI baseline");
+} else {
+  for (const [file, counts] of Object.entries(actual))
+    for (const [tag, count] of Object.entries(counts))
+      if (count > (baseline[file]?.[tag] || 0))
+        issues.push(
+          `${file}: new native ${tag} (${count} > ${baseline[file]?.[tag] || 0}); use the existing NutUI components`,
+        );
+  if (issues.length) {
+    console.error(issues.join("\n"));
+    process.exitCode = 1;
+  } else console.log("Vue syntax and UI baseline passed");
+}

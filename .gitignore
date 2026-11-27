@@ -144,3 +144,6 @@ CONTEXT_BUNDLE.md
 mydocs
 # DB-IP City Lite fetched by .github/panghuli/fetch-dbip.sh at image build time
 dbip/
+
+# Built by the pinned source in web/.
+frontend/

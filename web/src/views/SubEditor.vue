@@ -1,11 +1,11 @@
 <template>
-  <div class="page-wrapper" @click="handleEditGlobalClick">
+  <div class="page-wrapper" @click="handleEditGlobalClick"><div class="studio-editor-name"><span>{{t('editorPage.subConfig.basic.name.label')}}</span><UiInput v-model="form.name" :aria-label="t('editorPage.subConfig.basic.name.label')"/></div>
     <div
       v-if="editorTabsEnabled"
       class="editor-section-tabs"
       :style="{ top: navBarHeight }"
     >
-      <div class="editor-section-tab-list" role="tablist">
+      <div class="editor-section-tab-list" role="tablist" v-editor-tabs>
         <button
           v-for="tab in SUB_EDITOR_TABS"
           :key="tab"
@@ -13,7 +13,7 @@
           class="editor-section-tab"
           :class="{ current: activeEditorTab === tab }"
           role="tab"
-          :aria-selected="activeEditorTab === tab"
+          :aria-selected="activeEditorTab === tab" :tabindex="activeEditorTab===tab?0:-1"
           @click="activeEditorTab = tab"
         >
           {{ $t(`editorPage.subConfig.editorTabs.${tab}`) }}
@@ -147,28 +147,21 @@
         </nut-form-item>
         <ImageFitPicker v-model="form.iconFit" :fallback-value="appearanceSetting.iconFit" />
         </div>
-        <div v-show="!editorTabsEnabled || activeEditorTab === 'content'" class="editor-tab-content">
+        <div v-show="!editorTabsEnabled || ['content','request'].includes(activeEditorTab)" class="editor-tab-content">
         <template v-if="editType === 'subs'">
           <!-- source -->
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='content'"
             required
             :label="$t(`editorPage.subConfig.basic.source.label`)"
             prop="source"
           >
             <div class="radio-wrapper">
-              <nut-radiogroup direction="horizontal" v-model="form.source">
-                <nut-radio shape="button" label="remote">
-                  {{ $t(`editorPage.subConfig.basic.source.remote`) }}
-                </nut-radio>
-                <nut-radio shape="button" label="local">
-                  {{ $t(`editorPage.subConfig.basic.source.local`) }}
-                </nut-radio>
-              </nut-radiogroup>
+              <UiSelect v-model="form.source" :label="t('editorPage.subConfig.basic.source.label')" :options="{remote:t('studio.remote'),local:t('studio.local')}"/>
             </div>
           </nut-form-item>
           <!-- url / content -->
           <!-- :label="$t(`editorPage.subConfig.basic.url.label`)" -->
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='content'"
             required
             
             v-if="form.source === 'remote'"
@@ -203,7 +196,7 @@
               type="text"
             />
           </nut-form-item>
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='content'"
             v-else-if="form.source === 'local'"
             :label="undefined"
             prop="content"
@@ -229,7 +222,7 @@
             </div>
           </nut-form-item>
 
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             v-if="
               form.source === 'remote' ||
               ['localFirst', 'remoteFirst'].includes(form.mergeSources)
@@ -243,7 +236,7 @@
             </div>
           </nut-form-item>
           <!-- ua -->
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.passThroughUA.label`)"
             prop="passThroughUA"
             class="ignore-failed-wrapper"
@@ -253,7 +246,7 @@
               <nut-switch v-model="form.passThroughUA" @change="handlePassThroughUAChange"/>
             </div>
           </nut-form-item>
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.ua.label`)"
             prop="ua"
             v-if="form.source === 'remote'"
@@ -271,7 +264,7 @@
             />
           </nut-form-item>
 
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.noFlow.label`)"
             prop="noFlow"
             class="ignore-failed-wrapper"
@@ -281,7 +274,7 @@
             </div>
           </nut-form-item>
 
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.subUserinfo.label`)"
             prop="subUserinfo"
           >
@@ -299,7 +292,7 @@
             />
           </nut-form-item>
 
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.proxy.label`)"
             prop="proxy"
           >
@@ -315,7 +308,7 @@
             />
           </nut-form-item>
 
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
             :label="$t(`editorPage.subConfig.basic.source.mergeSources`)"
             prop="mergeSources"
           >
@@ -340,7 +333,7 @@
 
         <template v-else-if="editType === 'collections'">
           <!-- subscriptionTags -->
-          <nut-form-item
+          <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='content'"
             :label="$t(`editorPage.subConfig.basic.subscriptionTags.label`)"
             prop="subscriptionTags"
           >
@@ -439,7 +432,7 @@
               </draggable>
             </nut-checkboxgroup>
           </div>
-            <nut-form-item
+            <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
               :label="$t(`editorPage.subConfig.basic.noFlow.label`)"
               prop="noFlow"
               class="ignore-failed-wrapper"
@@ -448,7 +441,7 @@
                 <nut-switch v-model="form.noFlow" />
               </div>
             </nut-form-item>
-            <nut-form-item
+            <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
               :label="$t(`editorPage.subConfig.basic.subUserinfo.label`)"
               prop="subUserinfo"
             >
@@ -465,21 +458,21 @@
                 @click-left-icon="subUserinfoTips"
               />
             </nut-form-item>
-            <nut-form-item
+            <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
               prop="firstSubFlow"
               class="ignore-failed-wrapper"
             >
               <template #label>
                 <span class="label-with-tip" @click="firstSubFlowTips">
                   <span>{{ $t(`editorPage.subConfig.basic.firstSubFlow.label`) }}</span>
-                  <nut-icon name="tips"></nut-icon>
+                  <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
                 </span>
               </template>
               <div class="switch-wrapper">
                 <nut-switch v-model="form.firstSubFlow" />
               </div>
             </nut-form-item>
-            <nut-form-item
+            <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
               :label="$t(`editorPage.subConfig.basic.proxy.label`)"
               prop="proxy"
             >
@@ -496,11 +489,11 @@
           </nut-form-item>
         </template>
 
-        <nut-form-item prop="age-public-key">
+        <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'" prop="age-public-key">
           <template #label>
             <span class="label-with-tip" @click="ageOutputTips">
               <span>{{ $t("ageKey.publicKey.label") }}</span>
-              <nut-icon name="tips"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
             </span>
           </template>
           <div class="age-key-field">
@@ -516,7 +509,7 @@
           </div>
         </nut-form-item>
 
-        <nut-form-item
+        <nut-form-item v-show="!editorTabsEnabled||activeEditorTab==='request'"
           :label="$t(`editorPage.subConfig.basic.ignoreFailedRemoteSub.label`)"
           class="failure-mode-trigger"
           prop="ignoreFailedRemoteSub"
@@ -538,7 +531,7 @@
 
     <!-- 常用配置 -->
     <div
-      v-show="(!editorTabsEnabled || activeEditorTab === 'actions') && showEditorCommonBlock"
+      v-show="(!editorTabsEnabled || activeEditorTab === 'request') && showEditorCommonBlock"
       class="editor-tab-content editor-common-content"
       :class="{ 'editor-tab-fixed-offset': editorTabsEnabled }"
     >
@@ -566,17 +559,17 @@
   </div>
 
   <div class="bottom-btn-wrapper">
-    <nut-button @click="compare" class="compare-btn btn" plain shape="square">
-      <font-awesome-icon icon="fa-solid fa-eye" />
+    <nut-button v-ui-action v-tooltip="{content: $t('studio.preview')}" :aria-label="$t('studio.preview')" @click="compare" class="compare-btn btn" plain shape="square">
+      <font-awesome-icon v-tooltip="{content: $t('studio.preview')}" icon="fa-solid fa-eye" />
       {{ $t("editorPage.subConfig.btn.compare") }}
     </nut-button>
-    <nut-button
+    <nut-button v-ui-action v-tooltip="{content: $t('studio.save')}" :aria-label="$t('studio.save')"
       @click="submit"
       class="submit-btn btn"
       type="primary"
       shape="square"
     >
-      <font-awesome-icon icon="fa-solid fa-floppy-disk" />
+      <font-awesome-icon v-tooltip="{content: $t('studio.save')}" icon="fa-solid fa-floppy-disk" />
       {{ $t("editorPage.subConfig.btn.save") }}
     </nut-button>
   </div>
@@ -713,7 +706,7 @@ const editorTabsEnabled = computed(() => {
   if (editorGroupingMode.value === "always") return true;
   return isEditMode.value;
 });
-const SUB_EDITOR_TABS = ["display", "content", "actions"] as const;
+const SUB_EDITOR_TABS = ["content", "display", "request", "actions"] as const;
 type SubEditorTab = (typeof SUB_EDITOR_TABS)[number];
 const SUB_EDITOR_PROP_TO_TAB: Partial<Record<string, SubEditorTab>> = {
   name: "display",
@@ -726,17 +719,17 @@ const SUB_EDITOR_PROP_TO_TAB: Partial<Record<string, SubEditorTab>> = {
   source: "content",
   url: "content",
   content: "content",
-  passThroughUA: "content",
-  ua: "content",
-  noCache: "content",
-  noFlow: "content",
-  subUserinfo: "content",
-  proxy: "content",
-  mergeSources: "content",
+  passThroughUA: "request",
+  ua: "request",
+  noCache: "request",
+  noFlow: "request",
+  subUserinfo: "request",
+  proxy: "request",
+  mergeSources: "request",
   subscriptionTags: "content",
-  firstSubFlow: "content",
-  "age-public-key": "content",
-  ignoreFailedRemoteSub: "content",
+  firstSubFlow: "request",
+  "age-public-key": "request",
+  ignoreFailedRemoteSub: "request",
 };
 const availableEditorTabs = computed(() => [...SUB_EDITOR_TABS]);
 const getSubEditorActiveTab = (
@@ -758,7 +751,7 @@ const getSubEditorActiveTab = (
 };
 const activeEditorTab = ref(getSubEditorActiveTab(route.path, availableEditorTabs.value));
 const isSubFormTabActive = computed(() => {
-  return !editorTabsEnabled.value || ["display", "content"].includes(activeEditorTab.value);
+  return !editorTabsEnabled.value || ["display", "content", "request"].includes(activeEditorTab.value);
 });
 watch(
   [() => route.path, availableEditorTabs, isEditMode],

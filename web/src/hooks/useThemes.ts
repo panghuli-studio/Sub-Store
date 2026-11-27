@@ -58,13 +58,21 @@ const changeVariables = (newMode: CustomTheme) => {
     });
   }
 
+  const root=document.documentElement;
+  root.dataset.theme=modules[newMode].meta.label==='light'?'light':'dark';
+  const roles={'background-color':'bg','card-color':'surface','popup-color':'surface','primary-text-color':'text','second-text-color':'muted','comment-text-color':'subtle','divider-color':'line','primary-color':'accent','danger-color':'danger'};
+  const isApprovedTheme=newMode==='dark'||newMode==='light';
+  for(const role of Object.values(roles))root.style.removeProperty('--'+role);
+  if(!isApprovedTheme){for(const [key,role] of Object.entries(roles)){if(map[key])root.style.setProperty('--'+role,map[key])}}
+  const design=getComputedStyle(root);
+  if(isApprovedTheme){for(const [key,role] of Object.entries({...roles,'dialog-color':'surface','switch-active-background-color':'accent'})){root.style.setProperty('--'+key,design.getPropertyValue('--'+role).trim())}}
   // 切换浏览器窗口 / 状态栏颜色
   const themeColorMeta = document.getElementById('theme__color');
   themeColorMeta.setAttribute(
     'content',
     modules[newMode].colors['status-bar-background-color']
   );
-  document.body.style.backgroundColor = modules[newMode].colors['background-color'] || '';
+  document.body.style.backgroundColor = 'var(--background-color)';
 };
 
 export const useThemes = () => {

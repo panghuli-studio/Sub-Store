@@ -30,7 +30,7 @@
             class="drag-btn refresh"
             @click="refresh"
           >
-            <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrow-rotate-right" />
           </div>
 
           <div
@@ -40,7 +40,7 @@
             @click="onclickAddArtifact"
           >
             <div class="drag-btn">
-              <font-awesome-icon icon="fa-solid fa-plus" />
+              <font-awesome-icon v-tooltip="{content: $t('studio.add')}" icon="fa-solid fa-plus" />
             </div>
           </div>
         </nut-drag>
@@ -71,13 +71,13 @@
               class="global-cron-tip"
               :title="globalSyncCronText"
             >
-              <font-awesome-icon icon="fa-solid fa-clock" />
+              <font-awesome-icon v-tooltip="{content: globalSyncCronText}" icon="fa-solid fa-clock" />
               <span>{{ globalSyncCronText }}</span>
             </div>
           </div>
           <p v-else class="list-title">{{ $t(`syncPage.title`) }}</p>
           <div class="actions-wrapper">
-            <nut-button
+            <nut-button v-ui-action v-tooltip="{content: $t('studio.upload')}" :aria-label="$t('studio.upload')"
               v-if="artifacts.length > 0"
               class="upload-all-btn btn"
               type="info"
@@ -87,12 +87,12 @@
               :loading="uploadAllIsLoading"
               @click="uploadAll"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: $t('studio.upload')}"
                 icon="fa-solid fa-cloud-arrow-up"
                 v-if="!uploadAllIsLoading"
               />
             </nut-button>
-            <nut-button
+            <nut-button v-ui-action v-tooltip="{content: $t('studio.download')}" :aria-label="$t('studio.download')"
               v-if="syncPlatform !== 'gitlab'"
               class="upload-all-btn btn"
               type="info"
@@ -101,19 +101,19 @@
               :loading="downloadAllIsLoading"
               @click="downloadAll"
             >
-              <font-awesome-icon
+              <font-awesome-icon v-tooltip="{content: $t('studio.download')}"
                 icon="fa-solid fa-cloud-arrow-down"
                 v-if="!downloadAllIsLoading"
               />
             </nut-button>
-            <nut-button
+            <nut-button v-ui-action v-tooltip="{content: $t('studio.preview')}" :aria-label="$t('studio.preview')"
               class="preview-btn btn"
               type="info"
               plain
               size="small"
               @click="preview"
             >
-              <font-awesome-icon icon="fa-solid fa-eye" />
+              <font-awesome-icon v-tooltip="{content: $t('studio.preview')}" icon="fa-solid fa-eye" />
             </nut-button>
           </div>
         </div>
@@ -168,7 +168,7 @@
           <p>{{ $t(`syncPage.emptySub.desc`) }}</p>
         </template>
       </nut-empty>
-      <nut-button @click="onclickAddArtifact" type="primary">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.add')}" :aria-label="$t('studio.add')" @click="onclickAddArtifact" type="primary">
         {{ $t(`syncPage.emptySub.btn`) }}
       </nut-button>
     </div>
@@ -191,7 +191,7 @@
           </p>
         </template>
       </nut-empty>
-      <nut-button icon="refresh" type="primary" @click="refresh">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" icon="refresh" type="primary" @click="refresh">
         {{ $t(`subPage.loadFailed.btn`) }}
       </nut-button>
       <!-- <a
@@ -206,6 +206,8 @@
 </template>
 
 <script lang="ts" setup>
+import {useStudioStore} from '@/store/studio';
+import {watchEffect as studioWatchEffect} from 'vue';
 import ArtifactsListItem from "@/components/ArtifactsListItem.vue";
 import { useArtifactsStore } from "@/store/artifacts";
 import { storeToRefs } from "pinia";
@@ -522,6 +524,10 @@ const shouldShowElement = (element: Artifact) => {
     });
 };
 const filteredArtifacts = useFilteredDraggableList(artifacts, shouldShowElement);
+
+const studio=useStudioStore();
+studioWatchEffect(()=>{studio.filters={options:tags,value:tag,set:setTag};});
+studioWatchEffect(()=>{studio.description=globalSyncCronText.value;studio.pageActions=[{label:t('studio.upload'),icon:'cloud-arrow-up',run:uploadAll},{label:t('myPage.btn.download'),icon:'cloud-arrow-down',run:downloadAll},{label:t('studio.preview'),icon:'eye',run:preview}];});
 </script>
 
 <style lang="scss" scoped>

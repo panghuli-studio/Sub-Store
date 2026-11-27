@@ -25,7 +25,7 @@
         @click="openPicker('dark')"
         >
          <template v-slot:link>
-          <nut-icon name="rect-right"></nut-icon>
+          <nut-icon v-tooltip="{content: $t('studio.expand')}" name="rect-right"></nut-icon>
         </template></nut-cell>
       
 
@@ -36,7 +36,7 @@
         :desc="themeDes.lightDes"
         @click="openPicker('light')"
       ><template v-slot:link>
-          <nut-icon name="rect-right"></nut-icon>
+          <nut-icon v-tooltip="{content: $t('studio.expand')}" name="rect-right"></nut-icon>
         </template>
       </nut-cell>
     </nut-cell-group>

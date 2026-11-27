@@ -30,7 +30,7 @@
           <div class="icon-collection-action">
             <div class="action-btn" @click="handleMoreIconCollection">
               <span>{{ $t(`iconCollectionPage.more`) }}</span>
-              <nut-icon name="rect-right" size="12px"></nut-icon>
+              <nut-icon v-tooltip="{content: $t('studio.expand')}" name="rect-right" size="12px"></nut-icon>
             </div>
             <div class="action-btn" @click="handleResetDefault">
               <span>{{ $t(`iconCollectionPage.resetDefaultIconCollection`) }}</span>
@@ -98,7 +98,7 @@
                 <p>{{ $t(`iconCollectionPage.loadFailedDesc`) }}</p>
               </template>
             </nut-empty>
-            <nut-button
+            <nut-button v-ui-action v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')"
               icon="refresh"
               type="primary"
               class="icon-retry-btn"

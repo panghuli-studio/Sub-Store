@@ -2,7 +2,7 @@
   <div>
     <div class="desc" @click="tips">
       <span>{{ desc }}</span>
-      <nut-icon name="tips"></nut-icon>
+      <nut-icon v-tooltip="{content: $t('studio.help')}" name="tips"></nut-icon>
     </div>
     <div class="preview-options">
       <div class="preview-option-item">
@@ -48,8 +48,8 @@
             <img :src="platform.icon" class="auto-reverse" />
           </div>
           <p>{{ platform.name }}</p>
-          <nut-icon name="tips" v-if="platform.path === 'SurgeMac'" @click="tips"></nut-icon>
-          <nut-icon name="tips" v-if="platform.path === 'QX'" @click="qxTips"></nut-icon>
+          <nut-icon v-ui-action v-tooltip="{content: $t('studio.help')}" name="tips" v-if="platform.path === 'SurgeMac'" @click="tips"></nut-icon>
+          <nut-icon v-ui-action v-tooltip="{content: $t('studio.help')}" name="tips" v-if="platform.path === 'QX'" @click="qxTips"></nut-icon>
         </div>
 
         <div class="actions">
@@ -63,8 +63,8 @@
               color="var(--comment-text-color)"
             />
           </a>
-          <button class="copy-sub-link" @click.stop="targetCopy(platform.path)">
-            <svg-icon
+          <button v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')" class="copy-sub-link" @click.stop="targetCopy(platform.path)">
+            <svg-icon v-tooltip="{content: $t('studio.copyContent')}"
               name="copy"
               class="action-icon"
               color="var(--comment-text-color)"

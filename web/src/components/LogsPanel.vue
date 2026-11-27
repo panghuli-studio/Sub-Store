@@ -8,7 +8,7 @@
         class="logs-nav-action-layer"
         :class="{ 'is-overlay': isOverlayMode }"
       >
-        <button
+        <button v-tooltip="{content: $t('logsPage.refresh')}"
           v-if="canUseLogs"
           type="button"
           class="logs-nav-action-button logs-refresh-toggle"
@@ -19,9 +19,9 @@
           :disabled="isLoading"
           @click="loadLogs()"
         >
-          <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
+          <font-awesome-icon v-tooltip="{content: $t('logsPage.refresh')}" icon="fa-solid fa-arrow-rotate-right" />
         </button>
-        <button
+        <button v-tooltip="{content: isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')}"
           v-if="logs.length > 0"
           type="button"
           class="logs-nav-action-button logs-selection-toggle"
@@ -30,11 +30,11 @@
           :title="isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')"
           @click="toggleSelectionMode"
         >
-          <font-awesome-icon
+          <font-awesome-icon v-tooltip="{content: isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')}"
             :icon="isSelectionMode ? 'fa-solid fa-xmark' : 'fa-solid fa-list-check'"
           />
         </button>
-        <button
+        <button v-tooltip="{content: $t('logsPage.clear')}"
           v-if="logs.length > 0"
           type="button"
           class="logs-nav-action-button logs-clear-toggle"
@@ -43,7 +43,7 @@
           :title="$t('logsPage.clear')"
           @click="confirmClearLogs"
         >
-          <font-awesome-icon icon="fa-solid fa-eraser" />
+          <font-awesome-icon v-tooltip="{content: $t('logsPage.clear')}" icon="fa-solid fa-eraser" />
         </button>
       </div>
     </Teleport>
@@ -99,7 +99,7 @@
           :title="refreshIntervalPlaceholder"
         >
           <span class="logs-input-prefix">
-            <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrows-rotate" />
           </span>
           <nut-input
             v-model="refreshIntervalInput"
@@ -140,7 +140,7 @@
       >
         <p>{{ $t('logsPage.disabled.desc') }}</p>
         <div class="logs-disabled-alternatives">
-          <button
+          <button v-tooltip="{content: $t('studio.help')}" :aria-label="$t('studio.help')"
             type="button"
             class="logs-disabled-alternatives-toggle"
             :aria-expanded="showLogAlternatives ? 'true' : 'false'"
@@ -197,7 +197,7 @@
                   v-if="display.tags.length > 0"
                   class="log-tags"
                 >
-                  <button
+                  <button v-tooltip="{content: $t('studio.filter')}" :aria-label="$t('studio.filter')"
                     v-for="tag in display.tags"
                     :key="`${tag.type}-${tag.label}`"
                     type="button"
@@ -212,7 +212,7 @@
                   </button>
                 </div>
               </div>
-              <button
+              <button v-tooltip="{content: $t('logsPage.copy')}"
                 v-if="!isSelectionMode"
                 type="button"
                 class="log-copy-button"
@@ -220,7 +220,7 @@
                 :title="$t('logsPage.copy')"
                 @click.stop="copyLog(log)"
               >
-                <font-awesome-icon icon="fa-solid fa-clone" />
+                <font-awesome-icon v-tooltip="{content: $t('logsPage.copy')}" icon="fa-solid fa-clone" />
               </button>
             </div>
             <pre>{{ display.message }}</pre>
@@ -237,14 +237,14 @@
       <div class="logs-selection-summary">
         {{ $t('logsPage.selectMode.selectedCount', { count: selectedLogCount }) }}
       </div>
-      <nut-button plain size="small" type="primary" @click="toggleSelectAllLogs">
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.selectAll')}" :aria-label="$t('studio.selectAll')" plain size="small" type="primary" @click="toggleSelectAllLogs">
         {{
           isAllLogsSelected
             ? $t('logsPage.selectMode.clearAll')
             : $t('logsPage.selectMode.selectAll')
         }}
       </nut-button>
-      <nut-button
+      <nut-button v-ui-action v-tooltip="{content: $t('studio.copyContent')}" :aria-label="$t('studio.copyContent')"
         size="small"
         type="primary"
         :disabled="selectedLogCount === 0"

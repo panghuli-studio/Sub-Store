@@ -1,210 +1,82 @@
 <template>
-  <nut-swipe
-    class="sub-item-swipe"
-    :class="{ 'is-dual-column': props.isDualColumn }"
-    ref="swipe"
-    @close="setIsMoveClose()"
-    @open="setIsMoveOpen()"
-    :disabled="props.disabled"
+  <article
+    class="studio-card studio-card-artifact"
+    :class="{ 'studio-simple': appearanceSetting.isSimpleMode }"
   >
-    <div
-      class="sub-item-wrapper"
-      :class="{ 'is-dual-column': props.isDualColumn }"
-      :style="{ padding: itemPadding, '--icon-fit': iconFit }"
-      @click="handleContentClick"
-    >
-      <div v-if="appearanceSetting.isShowIcon" class="sub-img-wrappers" @click.stop="openUrl">
+    <div class="studio-card-main">
+      <div
+        v-if="appearanceSetting.isShowIcon"
+        class="studio-symbol"
+        :style="{
+          '--studio-icon-fit': iconFit,
+          filter: isIconColor ? undefined : 'grayscale(1)',
+        }"
+        :class="{ 'studio-symbol-blue': false }"
+      >
         <nut-avatar
-          :class="{ 'sub-item-customer-icon': !isIconColor }"
-          :size="avatarSize"
+          v-if="artifact.icon || appearanceSetting.isDefaultIcon"
           :url="displayIcon"
-          bg-color=""
-        ></nut-avatar>
+          :size="44"
+        /><UiIconButton
+          v-else
+          :label="t('studio.preview')"
+          :icon="'globe'"
+          @activate="openUrl"
+        />
       </div>
-      <div class="sub-item-content">
-        <div class="sub-item-title-wrapper">
-          <h3 class="sub-item-title" :title="displayName">
-            <span class="sub-item-name">{{ displayName }}</span>
-            <span v-for="item in tag" :key="item" class="tag">
-              <nut-tag>{{ item }}</nut-tag>
-            </span>
-          </h3>
-          <div class="title-right-wrapper" v-if="!appearanceSetting.isSimpleMode">
-            <button
-              v-if="!appearanceSetting.isShowIcon && artifactUrl"
-              class="copy-sub-link"
-              @click.stop="openUrl"
-            >
-              <font-awesome-icon icon="fa-solid fa-eye" />
-            </button>
-            <button
-              class="copy-sub-link"
-              style="padding: 0 12px"
-              v-if="artifactUrl"
-              @click.stop="onClickCopyLink"
-            >
-              <font-awesome-icon icon="fa-solid fa-clone"></font-awesome-icon>
-            </button>
-            <button
-              class="copy-sub-link"
-              @click.stop="onClickEdit"
-            >
-              <font-awesome-icon icon="fa-solid fa-pen-nib" />
-            </button>
-            <button
-              class="copy-sub-link"
-              @click.stop="swipeController"
-              v-if="!isMobile()"
-              ref="moreAction"
-            >
-              <font-awesome-icon icon="fa-solid fa-angles-right" />
-            </button>
-          </div>
-        </div>
-
-        <div class="sub-item-detail">
-          <p>
-            {{ detail.firstLine }}
-          </p>
-          <div class="second-line-wrapper">
-            <p :class="{ 'dual-non-simple-second-line': isDualNonSimpleMode }">
-              {{
-                appearanceSetting.isSimpleMode
-                  ? simpleDetailSecondLine
-                  : nonSimpleDetailSecondLine
-              }}
-            </p>
-            <div class="task-switch">
-              <div v-if="appearanceSetting.isSimpleMode">
-                <div class="simple-actions">
-                <button
-                  v-if="!appearanceSetting.isShowIcon && artifactUrl"
-                  class="copy-sub-link"
-                  @click.stop="openUrl"
-                >
-                  <font-awesome-icon icon="fa-solid fa-eye" />
-                </button>
-                <button
-                  v-if="artifactUrl"
-                  class="copy-sub-link"
-                  style="padding: 0 12px"
-                  @click.stop="onClickCopyLink"
-                >
-                  <font-awesome-icon
-                    icon="fa-solid fa-clone"
-                  ></font-awesome-icon>
-                </button>
-                <button
-                  class="copy-sub-link"
-                  @click.stop="onClickEdit"
-                >
-                  <font-awesome-icon icon="fa-solid fa-pen-nib" />
-                </button>
-                <button
-                    class="copy-sub-link"
-                    @click.stop="swipeController"
-                    v-if="!isMobile()"
-                    ref="moreAction"
-                  >
-                  <font-awesome-icon icon="fa-solid fa-angles-right" />
-                </button>
-                </div>
-              </div>
-              <span class="switch-label" v-if="!appearanceSetting.isSimpleMode">
-                {{ $t(`syncPage.syncSwitcher`) }}
-              </span>
-              <span @click.stop>
-                <nut-switch
-                  class="my-switch"
-                  v-model="isSyncOpen"
-                  :loading="isSwitcherLoading"
-                />
-              </span>
-            </div>
-          </div>
-        </div>
+      <div class="studio-card-content">
+        <h2>
+          <UiButton class="studio-card-title" @click.stop="openUrl">{{
+            displayName
+          }}</UiButton>
+        </h2>
+        <p class="studio-card-type">{{ artifact.platform }}</p>
         <p
-          v-if="remark && (
-            appearanceSetting.isSimpleMode
-              ? appearanceSetting.isSimpleShowRemark && !shouldInlineRemarkInSecondLine
-              : !isDualNonSimpleMode
-          )"
-          class="sub-item-remark"
+          v-if="
+            !appearanceSetting.isSimpleMode ||
+            appearanceSetting.isSimpleShowRemark
+          "
+          class="studio-card-detail"
         >
-          <span>{{ remarkText }}</span>
+          {{ remarkText || nonSimpleDetailSecondLine }}
         </p>
       </div>
     </div>
-
-    <template v-if="appearanceSetting.isLeftRight" #left>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="primary"
-          class="sub-item-swipe-btn"
-          @click="onClickSync"
-        >
-          <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" />
-        </nut-button>
+    <div class="studio-card-footer">
+      <span>{{ artifact.platform }}</span>
+      <div class="studio-card-actions">
+        <UiIconButton
+          :label="t('studio.upload')"
+          icon="cloud-arrow-up"
+          :disabled="props.disabled"
+          @activate="onClickSync"
+        /><UiIconButton
+          :label="t('studio.copy')"
+          icon="clone"
+          :disabled="props.disabled"
+          @activate="onClickCopyLink"
+        /><UiIconButton
+          :label="t('studio.edit')"
+          icon="pen-nib"
+          :disabled="props.disabled"
+          @activate="onClickEdit"
+        /><UiIconButton
+          :label="t('studio.delete')"
+          icon="trash-can"
+          :disabled="props.disabled"
+          danger
+          @activate="onClickDelete"
+        />
       </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="warning"
-          class="sub-item-swipe-btn"
-          @click="onClickEdit"
-        >
-          <font-awesome-icon icon="fa-solid fa-pen-nib" />
-        </nut-button>
-      </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="danger"
-          class="sub-item-swipe-btn"
-          @click="onClickDelete"
-        >
-          <font-awesome-icon icon="fa-solid fa-trash-can" />
-        </nut-button>
-      </div>
-    </template>
-
-    <template v-else #right>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="primary"
-          class="sub-item-swipe-btn"
-          @click="onClickSync"
-        >
-          <font-awesome-icon icon="fa-solid fa-cloud-arrow-up" />
-        </nut-button>
-      </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="warning"
-          class="sub-item-swipe-btn"
-          @click="onClickEdit"
-        >
-          <font-awesome-icon icon="fa-solid fa-pen-nib" />
-        </nut-button>
-      </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="danger"
-          class="sub-item-swipe-btn"
-          @click="onClickDelete"
-        >
-          <font-awesome-icon icon="fa-solid fa-trash-can" />
-        </nut-button>
-      </div>
-    </template>
-  </nut-swipe>
+    </div>
+  </article>
 </template>
-
 <script lang="ts" setup>
+import {
+  watchEffect as studioEffect,
+  onBeforeUnmount as studioUnmounted,
+} from "vue";
+import { useStudioStore } from "@/store/studio";
 import { useAppNotifyStore } from "@/store/appNotify";
 import { useArtifactsStore } from "@/store/artifacts";
 import { useSettingsStore } from "@/store/settings";
@@ -242,7 +114,8 @@ const { showNotify } = useAppNotifyStore();
 const subsStore = useSubsStore();
 const artifactsStore = useArtifactsStore();
 const settingsStore = useSettingsStore();
-const { appearanceSetting, githubProxy, githubProxyRegex } = storeToRefs(settingsStore);
+const { appearanceSetting, githubProxy, githubProxyRegex } =
+  storeToRefs(settingsStore);
 const { artifacts } = storeToRefs(artifactsStore);
 const artifact = computed(() => {
   return artifacts.value.find((item) => item.name === props.name);
@@ -269,17 +142,14 @@ const remarkText = computed(() => {
 });
 const shouldInlineRemarkInSecondLine = computed(() => {
   return Boolean(
-    props.isDualColumn
-    && appearanceSetting.value.isSimpleMode
-    && remarkText.value
-    && appearanceSetting.value.isSimpleShowRemark
+    props.isDualColumn &&
+    appearanceSetting.value.isSimpleMode &&
+    remarkText.value &&
+    appearanceSetting.value.isSimpleShowRemark,
   );
 });
 const isDualNonSimpleMode = computed(() => {
-  return Boolean(
-    props.isDualColumn
-    && !appearanceSetting.value.isSimpleMode,
-  );
+  return Boolean(props.isDualColumn && !appearanceSetting.value.isSimpleMode);
 });
 const avatarSize = computed(() => {
   if (appearanceSetting.value.isSimpleMode) return "36";
@@ -312,7 +182,10 @@ const isIconColor = computed(() => {
   return artifact.value.isIconColor !== false;
 });
 const iconFit = computed(() => {
-  return resolveImageFit(artifact.value?.iconFit, appearanceSetting.value.iconFit);
+  return resolveImageFit(
+    artifact.value?.iconFit,
+    appearanceSetting.value.iconFit,
+  );
 });
 
 const icon = computed(() => {
@@ -323,12 +196,14 @@ const icon = computed(() => {
   });
 });
 const githubUrlRewriter = computed(() => {
-  return createGithubProxyUrlRewriter(githubProxy.value, githubProxyRegex.value);
+  return createGithubProxyUrlRewriter(
+    githubProxy.value,
+    githubProxyRegex.value,
+  );
 });
 const displayIcon = computed(() => {
   return githubUrlRewriter.value(icon.value) || icon.value;
 });
-
 
 const sourceUrl = computed(() => {
   if (!artifact.value.type) {
@@ -353,7 +228,7 @@ const sourceUrl = computed(() => {
   return `${host.value}/download/${
     artifact.value.type === "subscription" ? "" : "collection/"
   }${encodeURIComponent(
-    artifact.value.source
+    artifact.value.source,
   )}${queryString ? `?${queryString}` : ""}`;
 });
 
@@ -373,7 +248,7 @@ const setIsMoveOpen = () => {
     if (moreAction.value) moreAction.value.style.transform = "rotate(180deg)";
 
     setTimeout(() => {
-      document.addEventListener('click', handleGlobalClick);
+      document.addEventListener("click", handleGlobalClick);
     }, 10);
   }, 100);
 
@@ -385,7 +260,7 @@ const setIsMoveClose = () => {
   swipeIsOpen.value = false;
   if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
 
-  document.removeEventListener('click', handleGlobalClick);
+  document.removeEventListener("click", handleGlobalClick);
 
   setTimeoutTF();
 };
@@ -398,26 +273,28 @@ const setTimeoutTF = () => {
 };
 
 const handleGlobalClick = (event: MouseEvent) => {
-  const swipeRightEl = document.querySelector('.nut-swipe__right');
-  const swipeLeftEl = document.querySelector('.nut-swipe__left');
+  const swipeRightEl = document.querySelector(".nut-swipe__right");
+  const swipeLeftEl = document.querySelector(".nut-swipe__left");
 
-  if ((swipeRightEl && swipeRightEl.contains(event.target as Node)) ||
-      (swipeLeftEl && swipeLeftEl.contains(event.target as Node))) {
+  if (
+    (swipeRightEl && swipeRightEl.contains(event.target as Node)) ||
+    (swipeLeftEl && swipeLeftEl.contains(event.target as Node))
+  ) {
     return;
   }
 
-  swipe.value.close();
+  swipe.value?.close();
   swipeIsOpen.value = false;
   if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
 
-  document.removeEventListener('click', handleGlobalClick);
+  document.removeEventListener("click", handleGlobalClick);
 };
 
 const handleContentClick = (event: MouseEvent) => {
   event.stopPropagation();
 
   if (swipeIsOpen.value) {
-    swipe.value.close();
+    swipe.value?.close();
     swipeIsOpen.value = false;
     if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
     return;
@@ -437,7 +314,7 @@ const openPreviewSource = () => {
     onOk: () => {
       window.open(sourceUrl.value);
     },
-    onOpened: () => swipe.value.close(),
+    onOpened: () => swipe.value?.close(),
     popClass: "auto-dialog",
     okText: t("editorPage.subConfig.basic.previewSwitch"),
     closeOnPopstate: true,
@@ -484,7 +361,9 @@ const detail = computed(() => {
     ? sourceSub.value?.displayName ||
       sourceSub.value?.["display-name"] ||
       sourceSub.value?.name
-    : (artifact.value.source ?`${artifact.value.source}(🚫)` : t("specificWord.unknownSource"));
+    : artifact.value.source
+      ? `${artifact.value.source}(🚫)`
+      : t("specificWord.unknownSource");
   const type = transferText("type") || "";
   if (appearanceSetting.value.isSimpleMode) {
     return {
@@ -506,36 +385,41 @@ const simpleDetailSecondLine = computed(() => {
     return detail.value.secondLine;
   }
 
-  return [detail.value.secondLine, remarkText.value].filter(Boolean).join(" · ");
+  return [detail.value.secondLine, remarkText.value]
+    .filter(Boolean)
+    .join(" · ");
 });
 const nonSimpleDetailSecondLine = computed(() => {
-  return [detail.value.secondLine, remarkText.value].filter(Boolean).join(" · ");
+  return [detail.value.secondLine, remarkText.value]
+    .filter(Boolean)
+    .join(" · ");
 });
 
 const swipeController = () => {
   if (swipeIsOpen.value) {
-    swipe.value.close();
+    swipe.value?.close();
     swipeIsOpen.value = false;
-    if(moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
+    if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
 
-    document.removeEventListener('click', handleGlobalClick);
+    document.removeEventListener("click", handleGlobalClick);
   } else {
     if (appearanceSetting.value.isLeftRight) {
-      swipe.value.open("right");
+      swipe.value?.open("right");
       setTimeout(() => {
         swipeIsOpen.value = true;
         setTimeout(() => {
-          document.addEventListener('click', handleGlobalClick);
+          document.addEventListener("click", handleGlobalClick);
         }, 10);
       }, 100);
     } else {
-      swipe.value.open("left");
+      swipe.value?.open("left");
       setTimeout(() => {
         swipeIsOpen.value = true;
-        if(moreAction.value) moreAction.value.style.transform = "rotate(180deg)";
+        if (moreAction.value)
+          moreAction.value.style.transform = "rotate(180deg)";
 
         setTimeout(() => {
-          document.addEventListener('click', handleGlobalClick);
+          document.addEventListener("click", handleGlobalClick);
         }, 10);
       }, 100);
     }
@@ -547,7 +431,9 @@ const onClickCopyLink = async () => {
     await copyText(encodeURI(artifactUrl.value));
     showNotify({ title: t("syncPage.copyNotify.succeed"), type: "success" });
   } catch (error) {
-    Toast.fail(t("syncPage.copyNotify.failed", { e: error?.message ?? String(error) }));
+    Toast.fail(
+      t("syncPage.copyNotify.failed", { e: error?.message ?? String(error) }),
+    );
   }
 };
 
@@ -592,7 +478,9 @@ const onClickDelete = () => {
     managedCancelText: t("archivePage.liveDelete.btn.archive"),
     managedOkText: t("archivePage.liveDelete.btn.permanent"),
     legacyTitle: t("syncPage.deleteArt.title"),
-    legacyContent: t("syncPage.deleteArt.desc", { displayName: displayName.value }),
+    legacyContent: t("syncPage.deleteArt.desc", {
+      displayName: displayName.value,
+    }),
     legacyCancelText: t("syncPage.deleteArt.btn.cancel"),
     legacyOkText: t("syncPage.deleteArt.btn.confirm"),
     onArchive: () => onDeleteConfirm("archive"),
@@ -618,6 +506,38 @@ watch(isSyncOpen, async () => {
   await artifactsStore.editArtifact(artifact.value.name, data);
   isSwitcherLoading.value = false;
 });
+
+const studio = useStudioStore();
+const studioKey = "artifact" + ":" + artifact.value.name;
+studioEffect(() => {
+  studio.resources[studioKey] = {
+    name: String(displayName.value),
+    controls: [
+      {
+        label: t("syncPage.syncSwitcher"),
+        get: () => isSyncOpen.value,
+        set: (value) => (isSyncOpen.value = value),
+        disabled: () => isSwitcherLoading.value,
+      },
+    ],
+    actions: [
+      { label: t("studio.preview"), icon: "eye", run: openUrl, danger: false },
+      {
+        label: t("studio.upload"),
+        icon: "cloud-arrow-up",
+        run: onClickSync,
+        danger: false,
+      },
+      {
+        label: t("studio.source"),
+        icon: "link",
+        run: openPreviewSource,
+        danger: false,
+      },
+    ],
+  };
+});
+studioUnmounted(() => delete studio.resources[studioKey]);
 </script>
 
 <style lang="scss" scoped>

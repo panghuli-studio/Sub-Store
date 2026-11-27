@@ -3,23 +3,23 @@
     <div class="compare-page-wrapper">
       <header class="compare-page-header preview-popup-header">
         <div class="btn-groups preview-leading">
-          <button type="button" class="btn close" @click="clickClose">
-            <font-awesome-icon icon="fa-solid fa-xmark" />
+          <button v-tooltip="{content: $t('studio.close')}" :aria-label="$t('studio.close')" type="button" class="btn close" @click="clickClose">
+            <font-awesome-icon v-tooltip="{content: $t('studio.close')}" icon="fa-solid fa-xmark" />
           </button>
-          <button v-if="showRefresh" type="button" class="btn refresh" @click="emit('refresh')">
-            <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
+          <button v-tooltip="{content: $t('studio.reload')}" :aria-label="$t('studio.reload')" v-if="showRefresh" type="button" class="btn refresh" @click="emit('refresh')">
+            <font-awesome-icon v-tooltip="{content: $t('studio.reload')}" icon="fa-solid fa-arrows-rotate" />
           </button>
         </div>
         <h1 class="preview-popup-title">{{ $t(`comparePage.title`) }}</h1>
         <div class="btn-groups preview-trailing">
-          <button
+          <button v-tooltip="{content: $t('logsPage.floating.open')}"
             type="button"
             class="btn logs"
             :aria-label="$t('logsPage.floating.open')"
             :title="$t('logsPage.floating.open')"
             @click.stop="openLogsOverlay"
           >
-            <font-awesome-icon icon="fa-solid fa-file-lines" />
+            <font-awesome-icon v-tooltip="{content: $t('logsPage.floating.open')}" icon="fa-solid fa-file-lines" />
           </button>
         </div>
       </header>
@@ -33,7 +33,19 @@
           <!--指示器说明-->
           <div class="compare-des">      
             <span class="indicator-group">
-              <button
+              <button v-tooltip="{content:
+                  !hasOriginalData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.beforeIndicator'),
+                      })
+                    : ''
+                }" :aria-label="
+                  !hasOriginalData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.beforeIndicator'),
+                      })
+                    : ''
+                "
                 type="button"
                 :aria-disabled="!hasOriginalData"
                 :aria-pressed="isOriginalVisible"
@@ -54,7 +66,19 @@
               >
                 {{ $t(`comparePage.remain.beforeIndicator`) }}
               </button>
-              <button
+              <button v-tooltip="{content:
+                  !hasOriginalData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.beforeIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                }" :aria-label="
+                  !hasOriginalData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.beforeIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                "
                 type="button"
                 :aria-disabled="!hasOriginalData"
                 :class="['node-names-action', !hasOriginalData && 'is-disabled']"
@@ -67,13 +91,31 @@
                 "
                 @click.stop="openNodeNamesDialog('before')"
               >
-                <font-awesome-icon icon="fa-solid fa-clone" />
+                <font-awesome-icon v-tooltip="{content:
+                  !hasOriginalData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.beforeIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                }" icon="fa-solid fa-clone" />
                 {{ $t('comparePage.nodeNames.entry') }}
               </button>
             </span>
 
             <span class="indicator-group">
-              <button
+              <button v-tooltip="{content:
+                  !hasProcessedData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.afterIndicator'),
+                      })
+                    : ''
+                }" :aria-label="
+                  !hasProcessedData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.afterIndicator'),
+                      })
+                    : ''
+                "
                 type="button"
                 :aria-disabled="!hasProcessedData"
                 :aria-pressed="isProcessedVisible"
@@ -94,7 +136,19 @@
               >
                 {{ $t(`comparePage.remain.afterIndicator`) }}
               </button>
-              <button
+              <button v-tooltip="{content:
+                  !hasProcessedData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.afterIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                }" :aria-label="
+                  !hasProcessedData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.afterIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                "
                 type="button"
                 :aria-disabled="!hasProcessedData"
                 :class="['node-names-action', !hasProcessedData && 'is-disabled']"
@@ -107,7 +161,13 @@
                 "
                 @click.stop="openNodeNamesDialog('after')"
               >
-                <font-awesome-icon icon="fa-solid fa-clone" />
+                <font-awesome-icon v-tooltip="{content:
+                  !hasProcessedData
+                    ? $t('comparePage.remain.indicatorDisabledTips', {
+                        side: $t('comparePage.remain.afterIndicator'),
+                      })
+                    : $t('comparePage.nodeNames.entry')
+                }" icon="fa-solid fa-clone" />
                 {{ $t('comparePage.nodeNames.entry') }}
               </button>
             </span>

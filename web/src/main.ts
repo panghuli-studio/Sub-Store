@@ -19,6 +19,15 @@ import 'virtual:svg-icons-register';
 import { createApp } from 'vue';
 
 import App from './App.vue';
+import {actionKeyboard,editorTabsKeyboard} from '@/plugin/actionKeyboard';
+import FloatingVue from 'floating-vue';
+import 'floating-vue/dist/style.css';
+import '@/assets/styles/design-tokens.css';
+import '@/assets/styles/studio.scss';
+import UiIconButton from '@/components/studio/UiIconButton.vue';
+import UiButton from '@/components/studio/UiButton.vue';
+import UiInput from '@/components/studio/UiInput.vue';
+import UiSelect from '@/components/studio/UiSelect.vue';
 
 export function initializeApp() {
   // 创建一个回调函数来处理变化
@@ -41,6 +50,13 @@ export function initializeApp() {
   const app = createApp(App);
 
   nutUi(app);
+  app.directive('ui-action',actionKeyboard);
+  app.directive('editor-tabs',editorTabsKeyboard);
+  app.use(FloatingVue,{delay:{show:300,hide:0}});
+  app.component('UiIconButton',UiIconButton);
+  app.component('UiButton',UiButton);
+  app.component('UiInput',UiInput);
+  app.component('UiSelect',UiSelect);
   app.use(router);
   app.use(pinia);
   app.use(i18n);

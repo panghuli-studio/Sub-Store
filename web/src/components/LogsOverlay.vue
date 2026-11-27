@@ -16,7 +16,7 @@
       class="logs-overlay-close-layer"
       :style="{ height: navBarHeight }"
     >
-      <button
+      <button v-tooltip="{content: $t('logsPage.floating.close')}"
         type="button"
         class="logs-overlay-close-button"
         :style="{ top: navActionOffset }"
@@ -24,7 +24,7 @@
         :title="$t('logsPage.floating.close')"
         @click.stop="logsOverlayStore.close()"
       >
-        <font-awesome-icon icon="fa-solid fa-xmark" />
+        <font-awesome-icon v-tooltip="{content: $t('logsPage.floating.close')}" icon="fa-solid fa-xmark" />
       </button>
     </div>
   </Teleport>

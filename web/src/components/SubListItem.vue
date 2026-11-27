@@ -1,313 +1,113 @@
 <template>
-  <nut-swipe
-    ref="swipe"
-    class="sub-item-swipe"
-    :class="{ 'is-dual-column': props.isDualColumn }"
-    :disabled="props.disabled"
-    @close="setIsMoveClose()"
-    @open="setIsMoveOpen()"
+  <article
+    class="studio-card studio-card-sub"
+    :class="{
+      'studio-simple': appearanceSetting.isSimpleMode,
+      'studio-actions-compact':
+        appearanceSetting.actionButtonsDisplayMode === 'compact',
+    }"
   >
     <div
-      class="sub-item-wrapper"
-      :class="{ 'is-dual-column': props.isDualColumn }"
-      :style="{ padding: itemPadding, '--icon-fit': iconFit }"
-      @click="handleContentClick"
-    >
+      v-if="
+        appearanceSetting.subProgressStyle === 'background' &&
+        typeof flow === 'object' &&
+        flow.progress
+      "
+      class="studio-progress"
+      :style="{ width: Math.min(100, flow.progress * 100) + '%' }"
+    />
+    <div class="studio-card-main">
       <div
-        v-if="
-          appearanceSetting.subProgressStyle === 'background' &&
-          typeof flow === 'object' &&
-          flow.progress
-        "
-        class="progress"
-        :style="{ width: `${flow.progress * 100}%` }"
-      ></div>
-      <!-- compareSub -->
-      <div
-        class="sub-img-wrappers"
-        :style="{ 'margin-top': imageMarginTop }"
-        @click.stop="compareSub"
+        v-if="appearanceSetting.isShowIcon"
+        class="studio-symbol"
+        :style="{
+          '--studio-icon-fit': iconFit,
+          filter: isIconColor ? undefined : 'grayscale(1)',
+        }"
+        :class="{
+          'studio-symbol-blue': false,
+          'studio-symbol-group':
+            props.type === 'collection' || props.sub.source === 'remote',
+        }"
       >
-        <!-- icon visible -->
-        <div v-if="appearanceSetting.isShowIcon">
-          <div v-if="isIconColor">
-            <nut-avatar
-              v-if="props[props.type].icon"
-              :size="avatarSize"
-              :url="rewriteGithubUrl(props[props.type].icon)"
-              bg-color=""
-            />
-            <nut-avatar
-              v-else
-              :size="avatarSize"
-              :url="rewriteGithubUrl(icon)"
-              bg-color=""
-            />
-          </div>
-          <div v-else>
-            <nut-avatar
-              class="sub-item-customer-icon"
-              :size="avatarSize"
-              :url="rewriteGithubUrl(props[props.type].icon || icon)"
-              bg-color=""
-            />
-          </div>
-        </div>
+        <nut-avatar
+          v-if="props[props.type].icon || appearanceSetting.isDefaultIcon"
+          :url="rewriteGithubUrl(props[props.type].icon || icon)"
+          :size="44"
+        /><UiIconButton
+          v-else
+          :label="t('studio.preview')"
+          :icon="
+            props.type === 'collection'
+              ? 'layer-group'
+              : props.sub.source === 'remote'
+                ? 'globe'
+                : 'file-lines'
+          "
+          @activate="compareSub"
+        />
       </div>
-      <div class="sub-item-content">
-        <div class="sub-item-title-wrapper">
-          <h3
-            v-if="!appearanceSetting.isSimpleMode"
-            class="sub-item-title"
-            :title="displayName"
-          >
-            <span class="sub-item-name">{{ displayName }}</span>
-            <!-- <span v-if="appOpenBtnVisible" class="app-url" @click.stop="openAppUrl" :title="typeof flow === 'object' ? flow.appUrl : ''">
-              <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" />
-            </span> -->
-            <span v-for="i in tag" :key="i" class="tag">
-              <nut-tag>{{ i }}</nut-tag>
-            </span>
-          </h3>
-          <h3
-            v-else
-            class="sub-item-title"
-            style="color: var(--primary-text-color); font-size: 16px"
-            :title="displayName"
-          >
-            <span class="sub-item-name">{{ displayName }}</span>
-            <!-- <span v-if="appOpenBtnVisible" class="app-url" @click.stop="openAppUrl" :title="typeof flow === 'object' ? flow.appUrl : ''">
-              <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" />
-            </span> -->
-            <span v-for="i in tag" :key="i" class="tag">
-              <nut-tag>{{ i }}</nut-tag>
-            </span>
-          </h3>
-
-          <!-- onClickCopyLink 拷贝 -->
-          <div
-            class="sub-item-menu"
-            :class="{ 'simple-mode': appearanceSetting.isSimpleMode }"
-          >
-            <!-- 更多 -->
-            <button
-              v-if="appearanceSetting.isSubItemMenuFold"
-              class="compare-sub-link"
-              @click.stop="switchItemMenuVisible"
-            >
-              <font-awesome-icon
-                :icon="
-                  itemMenuVisible
-                    ? 'fa-solid fa-angle-right'
-                    : 'fa-solid fa-ellipsis'
-                "
-              />
-            </button>
-            <template
-              v-if="itemMenuVisible || !appearanceSetting.isSubItemMenuFold"
-            >
-              <!-- 官网 -->
-              <button
-                v-if="appOpenBtnVisible && !appearanceSetting.hidePublicLinkActionButton"
-                class="compare-sub-link"
-                @click.stop="openAppUrl"
-              >
-                <font-awesome-icon icon="fa-solid fa-square-arrow-up-right" />
-              </button>
-              <!-- 预览 -->
-              <button
-                v-if="!appearanceSetting.isShowIcon"
-                class="compare-sub-link"
-                @click.stop="compareSub"
-              >
-                <font-awesome-icon icon="fa-solid fa-eye" />
-              </button>
-              <!-- 分享 -->
-              <button
-                v-if="shareBtnVisible"
-                class="public-link-action"
-                @click.stop="onClickShareLink"
-              >
-                <font-awesome-icon icon="fa-solid fa-share-nodes" />
-              </button>
-              <button class="copy-sub-link" @click.stop="onClickCopyLink">
-                <font-awesome-icon icon="fa-solid fa-clone" />
-              </button>
-            </template>
-            <!-- 刷新 -->
-            <button
-              v-if="
-                props.type === 'sub' &&
-                (!appearanceSetting.isSimpleMode ||
-                  appearanceSetting.isSimpleReicon)
-              "
-              class="refresh-sub-flow"
-              @click.stop="onClickRefresh"
-            >
-              <font-awesome-icon icon="fa-solid fa-arrow-rotate-right" />
-            </button>
-            <!-- 编辑 -->
-            <button
-              v-if="!appearanceSetting.isSimpleMode"
-              class="copy-sub-link"
-              @click.stop="onClickEdit"
-            >
-              <font-awesome-icon icon="fa-solid fa-pen-nib" />
-            </button>
-            <button v-else class="refresh-sub-flow" @click.stop="onClickEdit">
-              <font-awesome-icon icon="fa-solid fa-pen-nib" />
-            </button>
-            <!-- 打开侧边栏 -->
-            <button
-              v-if="!isMobile()"
-              ref="moreAction"
-              class="copy-sub-link"
-              @click.stop="swipeController"
-            >
-              <font-awesome-icon icon="fa-solid fa-angles-right" />
-            </button>
-          </div>
-        </div>
-        <template v-if="!appearanceSetting.isSimpleMode">
-          <template v-if="isDualNonSimpleMode">
-            <p class="sub-item-detail">
-              <span :title="nonSimpleLineTitle">
-                {{ nonSimplePrimaryLine }}
-              </span>
-            </p>
-            <p class="sub-item-remark dual-non-simple-second-line">
-              <span :title="nonSimpleLineTitle">
-                {{ nonSimpleSecondLine }}
-              </span>
-            </p>
-          </template>
-          <template v-else>
-            <p v-if="type === 'sub'" class="sub-item-detail">
-              <template v-if="typeof flow === 'string'">
-                <span>
-                  {{ flow }}
-                </span>
-              </template>
-              <template v-else-if="typeof flow === 'object'">
-                <span :title="flow.planName">
-                  {{ flow.firstLine }}
-                </span>
-                <span :title="flow.planName">{{ flow.secondLine }}</span>
-              </template>
-            </p>
-            <p v-else-if="type === 'collection'" class="sub-item-detail">
-              {{ collectionDetail }}
-            </p>
-            <p v-if="remark" class="sub-item-remark">
-              <span>{{ remarkText }}</span>
-            </p>
-          </template>
-        </template>
-
-        <template v-else>
-          <p v-if="type === 'sub'" class="sub-item-detail-isSimple">
-            <template v-if="typeof flow === 'string'">
-              <span style="font-weight: normal">
-                {{ simpleSubDetailLine }}
-              </span>
-            </template>
-            <template v-else-if="typeof flow === 'object'">
-              <span
-                v-if="simpleSubDetailLine"
-                style="font-weight: normal"
-                :title="flow.planName"
-              >
-                {{ simpleSubDetailLine }}
-              </span>
-            </template>
-          </p>
-          <p v-else-if="type === 'collection'" class="sub-item-detail-isSimple">
-            {{ simpleCollectionDetailLine }}
-          </p>
-          <p
-            v-if="remark && appearanceSetting.isSimpleShowRemark && !shouldInlineRemarkInSecondLine"
-            class="sub-item-remark"
-          >
-            <span>{{ remarkText }}</span>
-          </p>
-        </template>
+      <div class="studio-card-content">
+        <h2>
+          <UiButton class="studio-card-title" @click.stop="compareSub">{{
+            displayName
+          }}</UiButton>
+        </h2>
+        <p class="studio-card-type">
+          {{
+            props.type === "collection"
+              ? t("specificWord.collectionSub")
+              : props.sub.source === "remote"
+                ? t("studio.remote")
+                : t("studio.local")
+          }}
+        </p>
+        <p
+          v-if="
+            !appearanceSetting.isSimpleMode ||
+            appearanceSetting.isSimpleShowRemark
+          "
+          class="studio-card-detail"
+        >
+          {{
+            remarkText ||
+            (props.type === "collection"
+              ? collectionDetail
+              : nonSimpleSecondLine)
+          }}
+        </p>
       </div>
     </div>
-    <!-- 加入判断 开启拖动不显示 -->
-    <template v-if="appearanceSetting.isLeftRight" #left>
-      <!-- Copy -->
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="primary"
-          class="sub-item-swipe-btn"
-          @click="onClickCopyConfig"
-        >
-          <font-awesome-icon icon="fa-solid fa-paste" />
-        </nut-button>
+    <div class="studio-card-footer">
+      <span>{{ t("studio.groupSub") }}</span>
+      <div class="studio-card-actions">
+        <UiIconButton
+          :label="t('studio.refresh')"
+          icon="arrows-rotate"
+          :disabled="props.disabled"
+          @activate="
+            props.type === 'sub' ? onClickRefresh() : refreshCollection()
+          "
+        /><UiIconButton
+          :label="t('studio.share')"
+          icon="share-nodes"
+          :disabled="props.disabled"
+          v-if="shareBtnVisible"
+          @activate="onClickShareLink"
+        /><UiIconButton
+          :label="t('studio.copy')"
+          icon="clone"
+          :disabled="props.disabled"
+          @activate="onClickCopyLink"
+        /><UiIconButton
+          :label="t('studio.edit')"
+          icon="pen-nib"
+          :disabled="props.disabled"
+          @activate="onClickEdit"
+        />
       </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="success"
-          class="sub-item-swipe-btn"
-          @click="onClickExport"
-        >
-          <font-awesome-icon icon="fa-solid fa-file-export" />
-        </nut-button>
-      </div>
-      <!-- preview -->
-      <!-- <div class="sub-item-swipe-btn-wrapper">
-        <nut-button shape="square" type="success" class="sub-item-swipe-btn" @click="onClickPreview">
-          <font-awesome-icon icon="fa-solid fa-eye" />
-        </nut-button>
-      </div> -->
-      <!-- del -->
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="danger"
-          class="sub-item-swipe-btn"
-          @click="onClickDelete"
-        >
-          <font-awesome-icon icon="fa-solid fa-trash-can" />
-        </nut-button>
-      </div>
-    </template>
-
-    <template v-else #right>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="primary"
-          class="sub-item-swipe-btn"
-          @click.stop="onClickCopyConfig"
-        >
-          <font-awesome-icon icon="fa-solid fa-paste" />
-        </nut-button>
-      </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="success"
-          class="sub-item-swipe-btn"
-          @click="onClickExport"
-        >
-          <font-awesome-icon icon="fa-solid fa-file-export" />
-        </nut-button>
-      </div>
-      <div class="sub-item-swipe-btn-wrapper">
-        <nut-button
-          shape="square"
-          type="danger"
-          class="sub-item-swipe-btn"
-          @click.stop="onClickDelete"
-        >
-          <font-awesome-icon icon="fa-solid fa-trash-can" />
-        </nut-button>
-      </div>
-    </template>
-  </nut-swipe>
+    </div>
+  </article>
 
   <CompareTable
     v-if="compareTableIsVisible"
@@ -318,8 +118,13 @@
     @refresh="refreshCompare"
   />
 </template>
-
 <script lang="ts" setup>
+import service from "@/api";
+import {
+  watchEffect as studioEffect,
+  onBeforeUnmount as studioUnmounted,
+} from "vue";
+import { useStudioStore } from "@/store/studio";
 import { Dialog, Toast } from "@nutui/nutui";
 import dayjs from "dayjs";
 import { storeToRefs } from "pinia";
@@ -377,7 +182,8 @@ const globalStore = useGlobalStore();
 const subsStore = useSubsStore();
 const subsApi = useSubsApi();
 const settingsStore = useSettingsStore();
-const { appearanceSetting, githubProxy, githubProxyRegex } = storeToRefs(settingsStore);
+const { appearanceSetting, githubProxy, githubProxyRegex } =
+  storeToRefs(settingsStore);
 
 const {
   isFlowFetching,
@@ -392,7 +198,9 @@ const { showNotify } = useAppNotifyStore();
 const { currentUrl: host } = useHostAPI();
 
 const displayName =
-  props[props.type].displayName || props[props.type]["display-name"] || props[props.type].name;
+  props[props.type].displayName ||
+  props[props.type]["display-name"] ||
+  props[props.type].name;
 
 const name = props[props.type].name;
 const tag = props[props.type].tag;
@@ -406,17 +214,14 @@ const remarkText = computed(() => {
 });
 const shouldInlineRemarkInSecondLine = computed(() => {
   return Boolean(
-    props.isDualColumn
-    && appearanceSetting.value.isSimpleMode
-    && remarkText.value
-    && appearanceSetting.value.isSimpleShowRemark
+    props.isDualColumn &&
+    appearanceSetting.value.isSimpleMode &&
+    remarkText.value &&
+    appearanceSetting.value.isSimpleShowRemark,
   );
 });
 const isDualNonSimpleMode = computed(() => {
-  return Boolean(
-    props.isDualColumn
-    && !appearanceSetting.value.isSimpleMode,
-  );
+  return Boolean(props.isDualColumn && !appearanceSetting.value.isSimpleMode);
 });
 const { flows } = storeToRefs(subsStore);
 
@@ -436,7 +241,10 @@ const imageMarginTop = computed(() => {
   return props.isDualColumn ? "2px" : "0";
 });
 const githubUrlRewriter = computed(() => {
-  return createGithubProxyUrlRewriter(githubProxy.value, githubProxyRegex.value);
+  return createGithubProxyUrlRewriter(
+    githubProxy.value,
+    githubProxyRegex.value,
+  );
 });
 const rewriteGithubUrl = (url?: string | null) => {
   return githubUrlRewriter.value(url);
@@ -446,7 +254,10 @@ const isIconColor = computed(() => {
   return props[props.type].isIconColor !== false;
 });
 const iconFit = computed(() => {
-  return resolveImageFit(props[props.type].iconFit, appearanceSetting.value.iconFit);
+  return resolveImageFit(
+    props[props.type].iconFit,
+    appearanceSetting.value.iconFit,
+  );
 });
 
 const collectionDetail = computed(() => {
@@ -457,7 +268,9 @@ const collectionDetail = computed(() => {
   } else {
     const displayNameList = nameList.map((name) => {
       const sub = subsStore.getOneSub(name);
-      return sub?.displayName || sub?.["display-name"] || sub?.name || `${name}(🚫)`;
+      return (
+        sub?.displayName || sub?.["display-name"] || sub?.name || `${name}(🚫)`
+      );
     });
     if (nameList.length === 0) {
       return `${t("subPage.collectionItem.containTag")}: ${subTags.join(", ")}`;
@@ -720,8 +533,8 @@ const fetchCompareData = async (data?: any) => {
     console.error(e);
     compareData.value = null;
   }
-  await refreshSubFlowsIfNeeded()
-  
+  await refreshSubFlowsIfNeeded();
+
   Toast.hide("compare");
 };
 
@@ -733,7 +546,8 @@ const openComparePanel = () => {
   document.querySelector("html").style.height = "100%";
   document.body.style.height = "100%";
   document.body.style["overflow-y"] = "hidden";
-  (document.querySelector("#app") as HTMLElement).style["overflow-y"] = "hidden";
+  (document.querySelector("#app") as HTMLElement).style["overflow-y"] =
+    "hidden";
   (document.querySelector("#app") as HTMLElement).style.height = "100%";
 
   compareTableIsVisible.value = true;
@@ -747,12 +561,19 @@ const compareSub = async () => {
 const refreshCompare = async () => {
   try {
     // 重新获取最新订阅/组合订阅信息
-    const type = props.type === 'collection' ? 'collection' : 'sub';
+    const type = props.type === "collection" ? "collection" : "sub";
     const infoRes = await subsApi.getOne(type, name);
-    const latestData = (infoRes?.data?.status === 'success' ? infoRes.data.data : null) ?? (props.sub ?? props.collection);
+    const latestData =
+      (infoRes?.data?.status === "success" ? infoRes.data.data : null) ??
+      props.sub ??
+      props.collection;
     await fetchCompareData(latestData);
     // 同步更新 store，使进入编辑器时数据一致
-    subsStore.setOneData(props.type === 'collection' ? 'collections' : 'subs', name, latestData);
+    subsStore.setOneData(
+      props.type === "collection" ? "collections" : "subs",
+      name,
+      latestData,
+    );
   } catch (e) {
     console.error(e);
     compareData.value = null;
@@ -760,32 +581,33 @@ const refreshCompare = async () => {
   }
 };
 const swipeClose = () => {
-  swipe.value.close();
+  swipe.value?.close();
 };
 const swipeController = () => {
   if (swipeIsOpen.value) {
-    swipe.value.close();
+    swipe.value?.close();
     swipeIsOpen.value = false;
     if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
 
-    document.removeEventListener('click', handleGlobalClick);
+    document.removeEventListener("click", handleGlobalClick);
   } else {
     if (appearanceSetting.value.isLeftRight) {
-      swipe.value.open("right");
+      swipe.value?.open("right");
       setTimeout(() => {
         swipeIsOpen.value = true;
         setTimeout(() => {
-          document.addEventListener('click', handleGlobalClick);
+          document.addEventListener("click", handleGlobalClick);
         }, 10);
       }, 100);
     } else {
-      swipe.value.open("left");
+      swipe.value?.open("left");
       setTimeout(() => {
         swipeIsOpen.value = true;
-        if (moreAction.value) moreAction.value.style.transform = "rotate(180deg)";
+        if (moreAction.value)
+          moreAction.value.style.transform = "rotate(180deg)";
 
         setTimeout(() => {
-          document.addEventListener('click', handleGlobalClick);
+          document.addEventListener("click", handleGlobalClick);
         }, 10);
       }, 100);
     }
@@ -793,19 +615,21 @@ const swipeController = () => {
 };
 
 const handleGlobalClick = (event) => {
-  const swipeRightEl = document.querySelector('.nut-swipe__right');
-  const swipeLeftEl = document.querySelector('.nut-swipe__left');
+  const swipeRightEl = document.querySelector(".nut-swipe__right");
+  const swipeLeftEl = document.querySelector(".nut-swipe__left");
 
-  if ((swipeRightEl && swipeRightEl.contains(event.target)) ||
-      (swipeLeftEl && swipeLeftEl.contains(event.target))) {
+  if (
+    (swipeRightEl && swipeRightEl.contains(event.target)) ||
+    (swipeLeftEl && swipeLeftEl.contains(event.target))
+  ) {
     return;
   }
 
-  swipe.value.close();
+  swipe.value?.close();
   swipeIsOpen.value = false;
   if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
 
-  document.removeEventListener('click', handleGlobalClick);
+  document.removeEventListener("click", handleGlobalClick);
 };
 
 const isArchiveEnabled = computed(() => {
@@ -843,13 +667,11 @@ const setTimeoutTF = () => {
   }, 200);
 };
 
-
-
 const handleContentClick = (event) => {
   event.stopPropagation();
 
   if (swipeIsOpen.value) {
-    swipe.value.close();
+    swipe.value?.close();
     swipeIsOpen.value = false;
     if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
     return;
@@ -869,11 +691,17 @@ const openPreviewPanel = () => {
       displayName,
       type: props.type,
       general: t("subPage.panel.general"),
-      notify: t(`subPage.copyNotify.${shareBtnVisible.value ? "succeedWithShare" : "succeed"}`),
-      includeUnsupportedProxyLabel: t("subPage.panel.options.includeUnsupportedProxy"),
+      notify: t(
+        `subPage.copyNotify.${shareBtnVisible.value ? "succeedWithShare" : "succeed"}`,
+      ),
+      includeUnsupportedProxyLabel: t(
+        "subPage.panel.options.includeUnsupportedProxy",
+      ),
       prettyYamlLabel: t("subPage.panel.options.prettyYaml"),
       noFlowLabel: t("subPage.panel.options.noFlow"),
-      displayPreviewInWebPageLabel: t("moreSettingPage.displayPreviewInWebPage"),
+      displayPreviewInWebPageLabel: t(
+        "moreSettingPage.displayPreviewInWebPage",
+      ),
       tipsTitle: t(`subPage.panel.tips.title`),
       tipsContent: `${t("subPage.panel.tips.content")}\n${t(
         "syncPage.addArtForm.includeUnsupportedProxy.tips.content",
@@ -882,7 +710,7 @@ const openPreviewPanel = () => {
       tipsOkText: t(`subPage.panel.tips.ok`),
       tipsCancelText: t(`subPage.panel.tips.cancel`),
     }),
-    onOpened: () => swipe.value.close(),
+    onOpened: () => swipe.value?.close(),
     popClass: "auto-dialog",
     // @ts-ignore
     closeOnClickOverlay: true,
@@ -897,7 +725,7 @@ const shareBtnVisible = computed(() => {
 });
 
 const closeExpandedMenu = () => {
-  swipe.value.close();
+  swipe.value?.close();
   swipeIsOpen.value = false;
   itemMenuVisible.value = false;
   if (moreAction.value) moreAction.value.style.transform = "rotate(0deg)";
@@ -930,7 +758,9 @@ const onClickCopyConfig = async () => {
   closeExpandedMenu();
 };
 const onClickExport = async () => {
-  Toast.loading(t("subPage.exportConfigNotify.loading"), { id: "exportConfig" });
+  Toast.loading(t("subPage.exportConfigNotify.loading"), {
+    id: "exportConfig",
+  });
   try {
     downloadBlobResponse(
       await subsApi.exportOne(props.type, name),
@@ -978,9 +808,30 @@ const onClickCopyLink = async () => {
 
   try {
     await copyText(url);
-    showNotify({ title: t(`subPage.copyNotify.${shareBtnVisible.value ? "succeedWithShare" : "succeed"}`) });
+    showNotify({
+      title: t(
+        `subPage.copyNotify.${shareBtnVisible.value ? "succeedWithShare" : "succeed"}`,
+      ),
+    });
   } catch (error) {
-    Toast.fail(t("subPage.copyNotify.failed", { e: error?.message ?? String(error) }));
+    Toast.fail(
+      t("subPage.copyNotify.failed", { e: error?.message ?? String(error) }),
+    );
+  }
+};
+
+const refreshCollection = async () => {
+  Toast.loading(t("globalNotify.refresh.loading"), {
+    cover: true,
+    id: "refresh",
+  });
+  try {
+    await service.get("/download/collection/" + encodeURIComponent(name), {
+      params: { noCache: true },
+    });
+    showNotify({ title: t("globalNotify.refresh.succeed") });
+  } finally {
+    Toast.hide("refresh");
   }
 };
 
@@ -994,19 +845,91 @@ const onClickRefresh = async () => {
   } catch (e) {
     console.error(e);
   }
-  await refreshSubFlowsIfNeeded()
+  await refreshSubFlowsIfNeeded();
   Toast.hide("refresh");
   showNotify({ title: t("globalNotify.refresh.succeed") });
 };
 
 const refreshSubFlowsIfNeeded = async () => {
-  if (!props.sub) return
+  if (!props.sub) return;
   try {
-    await subsStore.fetchFlows([props.sub])
+    await subsStore.fetchFlows([props.sub]);
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
+};
+
+function showFlow() {
+  const current = flow.value;
+  Dialog({
+    title: t("studio.flow"),
+    content:
+      typeof current === "string"
+        ? current
+        : [current?.planName, current?.firstLine, current?.secondLine]
+            .filter(Boolean)
+            .join(" · "),
+    noCancelBtn: true,
+    popClass: "auto-dialog",
+    lockScroll: false,
+  });
 }
+const studio = useStudioStore();
+const studioKey = props.type + ":" + name;
+studioEffect(() => {
+  studio.resources[studioKey] = {
+    name: String(displayName),
+    actions: [
+      {
+        label: t("studio.preview"),
+        icon: "eye",
+        run: compareSub,
+        danger: false,
+      },
+      {
+        label: t("studio.duplicate"),
+        icon: "paste",
+        run: onClickCopyConfig,
+        danger: false,
+      },
+      {
+        label: t("studio.export"),
+        icon: "file-export",
+        run: onClickExport,
+        danger: false,
+      },
+      {
+        label: t("studio.delete"),
+        icon: "trash-can",
+        run: onClickDelete,
+        danger: true,
+      },
+      {
+        label: t("studio.outputs"),
+        icon: "sliders",
+        run: openPreviewPanel,
+        danger: false,
+      },
+      {
+        label: t("studio.flow"),
+        icon: "circle-info",
+        run: showFlow,
+        danger: false,
+      },
+      ...(appOpenBtnVisible.value &&
+      !appearanceSetting.value.hidePublicLinkActionButton
+        ? [
+            {
+              label: t("studio.open"),
+              icon: "arrow-up-right-from-square",
+              run: openAppUrl,
+            },
+          ]
+        : []),
+    ],
+  };
+});
+studioUnmounted(() => delete studio.resources[studioKey]);
 </script>
 
 <style lang="scss" scoped>
@@ -1015,8 +938,6 @@ const refreshSubFlowsIfNeeded = async () => {
   display: block;
   min-width: 0;
 }
-
-
 
 .sub-item-customer-icon {
   :deep(img) {

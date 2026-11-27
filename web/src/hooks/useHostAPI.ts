@@ -7,7 +7,7 @@ import { initStores } from '@/utils/initApp';
 import { isValidShareBaseUrl, normalizeShareBaseUrl } from '@/utils/share';
 
 const lsKey = 'hostAPI';
-const defaultAPI = import.meta.env.VITE_API_URL || 'https://sub.store';
+const defaultAPI = import.meta.env.VITE_API_URL || window.location.origin;
 
 const normalizeHostApiUrl = (url: string) => {
   return url.replace(/\/$/, '');

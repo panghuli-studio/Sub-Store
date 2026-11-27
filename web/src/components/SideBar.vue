@@ -7,7 +7,7 @@
           :class="{ active: activeTab === 0 }" 
           @click="router.push('/subs')"
         >
-          <nut-icon name="link" size="22px" />
+          <nut-icon v-tooltip="{content: $t('studio.close')}" name="link" size="22px" />
           <span class="label" v-show="isExpanded">{{ $t('tabBar.sub') }}</span>
         </div>
 
@@ -17,7 +17,7 @@
           :class="{ active: activeTab === 1 }" 
           @click="router.push('/files')"
         >
-          <nut-icon name="category" size="22px" />
+          <nut-icon v-tooltip="{content: $t('studio.close')}" name="category" size="22px" />
           <span class="label" v-show="isExpanded">{{ $t('tabBar.file') }}</span>
         </div>
 
@@ -27,7 +27,7 @@
           :class="{ active: activeTab === 2 }" 
           @click="router.push('/sync')"
         >
-          <nut-icon name="refresh2" size="22px" />
+          <nut-icon v-tooltip="{content: $t('studio.close')}" name="refresh2" size="22px" />
           <span class="label" v-show="isExpanded">{{ $t('tabBar.sync') }}</span>
         </div>
 
@@ -37,7 +37,7 @@
           :class="{ active: activeTab === 3 }" 
           @click="router.push('/shares')"
         >
-          <font-awesome-icon icon="fa-solid fa-share-nodes" style="font-size: 20px; width: 22px; height: 22px;" />
+          <font-awesome-icon v-tooltip="{content: $t('studio.close')}" icon="fa-solid fa-share-nodes" style="font-size: 20px; width: 22px; height: 22px;" />
           <span class="label" v-show="isExpanded">{{ $t('tabBar.share') }}</span>
         </div>
 
@@ -47,7 +47,7 @@
           :class="{ active: activeTab === 4 }" 
           @click="router.push('/archives')"
         >
-          <font-awesome-icon icon="fa-solid fa-box-archive" style="font-size: 20px; width: 22px; height: 22px;" />
+          <font-awesome-icon v-tooltip="{content: $t('studio.close')}" icon="fa-solid fa-box-archive" style="font-size: 20px; width: 22px; height: 22px;" />
           <span class="label" v-show="isExpanded">{{ $t('tabBar.archive') }}</span>
         </div>
 
