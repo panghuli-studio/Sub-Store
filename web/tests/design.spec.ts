@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { installBackend } from "./fixtures";
+import { preparePageForReview } from './pageReady';
 for (const width of [375, 1280])
   for (const theme of ["dark", "light"])
     test(`approved layout ${width} ${theme}`, async ({ page }, testInfo) => {
@@ -29,7 +30,7 @@ for (const width of [375, 1280])
           await expect(page.getByRole('button',{name:'筛选与批量管理',exact:true})).toBeVisible();
           if(path!=='/archives')await expect(page.getByRole('button',{name:'新建条目',exact:true})).toBeVisible();
         }
-        await page.locator(".Toastify__toast").waitFor({ state: "hidden" });
+        await preparePageForReview(page, theme);
         await page.screenshot({
           path: testInfo.outputPath(`${path.slice(1)}.png`),
           fullPage: true,

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { installBackend } from "./fixtures";
+import { preparePageForReview } from './pageReady';
 for (const width of [375, 1280])
   for (const theme of ["dark", "light"])
     test(`details ${width} ${theme}`, async ({ page }, info) => {
@@ -16,7 +17,7 @@ for (const width of [375, 1280])
         await page.goto(path);
         const dialog = page.locator(".studio-route-dialog");
         await expect(dialog).toBeVisible();
-        await page.locator(".Toastify__toast").waitFor({ state: "hidden" });
+        await preparePageForReview(page, theme);
         await page.screenshot({
           path: info.outputPath(path.replaceAll("/", "-") + ".png"),
           fullPage: false,

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { installBackend } from "./fixtures";
+import { preparePageForReview } from './pageReady';
 
 test("search and management preserve the approved default card layout", async ({
   page,
@@ -108,7 +109,7 @@ test("settings preserve all ten categories and save the original payload", async
   await popup
     .getByPlaceholder("默认超时(单位: 毫秒, 默认: 8000)")
     .fill("12345");
-  await page.locator(".Toastify__toast").waitFor({ state: "hidden" });
+  await preparePageForReview(page, 'dark');
   await page.screenshot({
     path: info.outputPath("request-settings.png"),
     fullPage: true,

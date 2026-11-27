@@ -2,7 +2,7 @@
   <!-- <GlobalNotify /> -->
   <NavBar />
   <StudioNavigation />
-  <main class="page-body studio-page" :class="{'studio-narrow':isWideScreenNarrowModeActive}" :data-page="route.path">
+  <main class="page-body studio-page" :class="{'studio-narrow':isWideScreenNarrowModeActive}" :data-page="route.path" :aria-busy="globalStore.isLoading || isBackendCheckInProgress">
     <router-view />
   </main>
   <LogsOverlay />

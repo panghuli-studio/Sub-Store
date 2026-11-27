@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { installBackend } from "./fixtures";
+import { preparePageForReview } from './pageReady';
 for (const path of ["/subs", "/files", "/sync", "/shares", "/archives", "/my"])
   test(`accessible main page ${path}`, async ({ page }) => {
     await installBackend(page);
@@ -11,7 +12,7 @@ for (const path of ["/subs", "/files", "/sync", "/shares", "/archives", "/my"])
       .waitFor();
     if (path === "/my")
       await expect(page.locator(".studio-setting-card").first()).toBeEnabled();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await preparePageForReview(page, 'dark');
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
