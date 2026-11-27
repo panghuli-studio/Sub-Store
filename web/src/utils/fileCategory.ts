@@ -4,15 +4,11 @@ export function getFileCategory(file: any): FileCategory {
     return file.uiCategory;
   if (file.type === "mihomoConfig") return "config";
   const name = String(file.displayName || file.name || "");
-  if (
-    /configuration|完整配置|配置文件/i.test(name) ||
-    /(?:^|\n)(?:proxy-groups|rules|dns):/.test(file.content || "")
-  )
+  if (/configuration|完整配置|配置文件/i.test(name)) return "config";
+  if (/nodes|节点/i.test(name)) return "nodes";
+  if (/(?:^|\n)(?:proxy-groups|rules|dns):/.test(file.content || ""))
     return "config";
-  if (
-    /nodes|节点/i.test(name) ||
-    /^(?:proxies:|ss:|ssr:|vmess:|vless:|trojan:)/.test(file.content || "")
-  )
+  if (/^(?:proxies:|ss:|ssr:|vmess:|vless:|trojan:)/.test(file.content || ""))
     return "nodes";
   return "other";
 }
