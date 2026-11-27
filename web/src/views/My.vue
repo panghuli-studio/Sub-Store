@@ -636,6 +636,13 @@
           />
         </div>
       </div>
+      <div class="studio-card-actions">
+        <UiIconButton
+          :label="$t('studio.rebuildCache')"
+          icon="arrows-rotate"
+          @activate="resetPwaCacheAndReload({ notify: showNotify, t })"
+        />
+      </div>
     </section>
     <section v-if="settingPanel === 'backup'" class="studio-backup">
       <div class="profile-block">
@@ -849,6 +856,7 @@ import { butifyDate } from "@/utils/butifyDate";
 import { downloadBlobResponse } from "@/utils/download";
 import { createGithubProxyUrlRewriter } from "@/utils/githubProxy";
 import { initStores } from "@/utils/initApp";
+import { resetPwaCacheAndReload } from "@/utils/pwa";
 import { storeToRefs } from "pinia";
 import { computed, ref, watch, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
