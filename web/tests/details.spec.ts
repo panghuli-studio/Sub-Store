@@ -1,19 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { installBackend } from "./fixtures";
-import { preparePageForReview } from './pageReady';
-for (const width of [375, 1280])
-  for (const theme of ["dark", "light"])
-    test(`details ${width} ${theme}`, async ({ page }, info) => {
-      const errors: string[] = [];
-      page.on("pageerror", (e) => errors.push(e.message));
-      await installBackend(page, theme);
-      await page.setViewportSize({ width, height: 900 });
-      for (const path of [
-        "/edit/subs/JMS-demo",
-        "/settings/more",
-        "/settings/api",
-        "/logs",
-      ]) {
+import { preparePageForReview } from "./pageReady";
+
+for (const path of [
+  "/edit/subs/JMS-demo",
+  "/settings/more",
+  "/settings/api",
+  "/logs",
+])
+  for (const width of [375, 1280])
+    for (const theme of ["dark", "light"])
+      test(`details ${path} ${width} ${theme}`, async ({ page }, info) => {
+        const errors: string[] = [];
+        page.on("pageerror", (e) => errors.push(e.message));
+        await installBackend(page, theme);
+        await page.setViewportSize({ width, height: 900 });
         await page.goto(path);
         const dialog = page.locator(".studio-route-dialog");
         await expect(dialog).toBeVisible();
@@ -27,6 +28,5 @@ for (const width of [375, 1280])
           width === 375 ? 343 : path.startsWith("/settings/") ? 680 : 520,
         );
         expect(box!.x).toBeGreaterThanOrEqual(0);
-      }
-      expect(errors).toEqual([]);
-    });
+        expect(errors).toEqual([]);
+      });
