@@ -55,6 +55,11 @@ jobs:
       - name: Build approved front-end
         run: .github/panghuli/build-frontend.sh
 
+      - name: Verify release attachments
+        run: |
+          node --test .github/panghuli/release-assets.test.mjs
+          sh .github/panghuli/prepare-release-assets.sh
+
       - name: Fetch DB-IP City Lite
         run: .github/panghuli/fetch-dbip.sh >> "$GITHUB_ENV"
 

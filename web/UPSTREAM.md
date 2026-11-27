@@ -8,6 +8,8 @@ The existing API clients, stores, editors, processing actions and settings remai
 
 `pnpm install --frozen-lockfile && pnpm build` produces `dist/`. The shared `.github/panghuli/build-frontend.sh` copies this build to the image's `frontend/` directory. CI and release use the same build script.
 
+`.github/panghuli/prepare-release-assets.sh` packages that directory as `frontend.zip` and creates checksums for the frontend archive and backend bundle. CI verifies the same attachments before the release workflow can publish them. The frontend output directory and archive are recreated on each build so removed chunks are not retained.
+
 The packaged frontend defaults to its own serving origin rather than a public third-party API. Explicit `VITE_API_URL`, saved backends and URL `api`/`magicpath` configuration retain precedence. Set the backend's `SUB_STORE_CORS_ALLOWED_ORIGINS` to the actual serving origin when serving the merged application.
 
 ## Updating upstream

@@ -67,6 +67,11 @@ jobs:
       - name: Build approved front-end
         run: .github/panghuli/build-frontend.sh
 
+      - name: Prepare release attachments
+        run: |
+          node --test .github/panghuli/release-assets.test.mjs
+          sh .github/panghuli/prepare-release-assets.sh
+
       - name: Fetch DB-IP City Lite
         run: .github/panghuli/fetch-dbip.sh >> "$GITHUB_ENV"
 
@@ -102,8 +107,6 @@ jobs:
           PREVIOUS: ${{ steps.tag.outputs.previous }}
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          cp backend/dist/sub-store.bundle.js .
-          sha256sum sub-store.bundle.js dist.zip > checksums.txt
           {
             echo "Built from \`dev\` at ${GITHUB_SHA}."
             echo
@@ -111,7 +114,7 @@ jobs:
             echo
             echo "Digest: \`${IMAGE}@${DIGEST}\`"
             echo
-            echo "Front-end: sub-store-org/Sub-Store-Front-End ${FRONTEND_VERSION}"
+            echo "Front-end: custom UI based on sub-store-org/Sub-Store-Front-End ${FRONTEND_VERSION}; bundled in frontend.zip."
             echo
             echo "Geo database: DB-IP IP to City Lite ${DBIP_VERSION} at \`/opt/app/geo/dbip-city-lite.mmdb\`."
             echo "IP Geolocation by DB-IP (https://db-ip.com), licensed under CC BY 4.0."
@@ -122,5 +125,5 @@ jobs:
               git log --no-merges --format='- %s (%h)' "${PREVIOUS}..${GITHUB_SHA}" | head -100
             fi
           } > notes.md
-          gh release create "$TAG" sub-store.bundle.js checksums.txt \
+          gh release create "$TAG" sub-store.bundle.js frontend.zip checksums.txt \
             --target "$GITHUB_SHA" --title "$TAG" --notes-file notes.md

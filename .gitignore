@@ -147,3 +147,6 @@ dbip/
 
 # Built by the pinned source in web/.
 frontend/
+/frontend.zip
+/sub-store.bundle.js
+/checksums.txt

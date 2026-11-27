@@ -8,6 +8,9 @@ if [ "$source_version" != "$FRONTEND_VERSION" ]; then
 fi
 pnpm --dir web install --frozen-lockfile
 pnpm --dir web build
-mkdir -p frontend
-cp -R web/dist/. frontend/
+node --input-type=module <<'JS'
+import { cpSync, rmSync } from 'node:fs';
+rmSync('frontend', { recursive: true, force: true });
+cpSync('web/dist', 'frontend', { recursive: true });
+JS
 printf 'FRONTEND_VERSION=%s\n' "${FRONTEND_VERSION}" >> "${GITHUB_ENV:-/dev/null}"
