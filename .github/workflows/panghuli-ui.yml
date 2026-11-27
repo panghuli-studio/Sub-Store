@@ -1,0 +1,30 @@
+name: panghuli ui
+on:
+  pull_request:
+    branches: [dev]
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+      - run: pnpm lint && pnpm typecheck && pnpm design:check && pnpm test && pnpm build
+        working-directory: web
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+        working-directory: web
+      - run: pnpm exec playwright test
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-review
+          path: web/test-results
