@@ -1,0 +1,23 @@
+{
+  "processors": [
+    "Script Operator",
+    "Response Transformer",
+    "Flag Operator",
+    "Sort Operator",
+    "Resolve Domain Operator",
+    "Region Filter",
+    "Type Filter",
+    "Regex Filter",
+    "Regex Sort Operator",
+    "Regex Delete Operator",
+    "Regex Rename Operator",
+    "Handle Duplicate Operator",
+    "Script Filter"
+  ],
+  "fileProcessor": true,
+  "draftReturn": true,
+  "bulkRestore": true,
+  "logRegex": true,
+  "logClear": true,
+  "errors": []
+}

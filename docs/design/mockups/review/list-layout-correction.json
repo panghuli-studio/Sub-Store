@@ -1,0 +1,101 @@
+{
+  "base": "https://folding-channels-melbourne-possession.trycloudflare.com/",
+  "results": [
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 375,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    },
+    {
+      "engine": "firefox",
+      "width": 375,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "firefox",
+      "width": 375,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "firefox",
+      "width": 1280,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    },
+    {
+      "engine": "firefox",
+      "width": 1280,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 375,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 176,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 1280,
+      "theme": "dark",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 1280,
+      "theme": "light",
+      "cardGap": 24,
+      "cardHeight": 191,
+      "overflow": false
+    }
+  ]
+}
