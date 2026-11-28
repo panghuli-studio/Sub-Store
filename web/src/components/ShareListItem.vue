@@ -422,12 +422,12 @@ const onClickPreviews = () => {
 };
 
 const studio = useStudioStore();
-const studioKey = "share" + ":" + name.value;
+const studioKey = `share:${props.data.type}:${name.value}:${props.data.token}`;
 studioEffect(() => {
   studio.resources[studioKey] = {
     tags: shareTags.value,
     data: props.data,
-    name: String(displayName.value),
+    name: String(displayName.value || name.value),
     actions: [
       {
         label: t("studio.preview"),

@@ -100,6 +100,12 @@
           icon="check-double"
           @activate="studio.selection.all"
         /><UiIconButton
+          v-for="action in studio.selection.groups"
+          :key="action.label"
+          :label="action.label"
+          :icon="action.icon"
+          @activate="action.run"
+        /><UiIconButton
           v-if="studio.selection.expired"
           :label="t('studio.selectExpired')"
           icon="filter"

@@ -933,7 +933,7 @@ studioWatchEffect(() => { studio.groups = [
   { label: t("studio.groupFile"), isCollapsed: () => Boolean(isFold("file")), expand: () => { if (isFold("file")) toggleFold("file"); } }
 ]; });
 studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
-studioWatchEffect(()=>{studio.selection={isSelected:isShareSelected,toggle:toggleShareSelection,all:toggleSelectAllShares,expired:selectExpiredShares,remove:confirmDeleteSelectedShares,count:()=>selectedShareCount.value};});
+studioWatchEffect(()=>{studio.selection={groups:(["sub", "col", "file"] as ShareGroupKey[]).filter(type=>getVisibleSharesByType(type).length).map(type=>({label:getShareTypeSelectionA11yLabel(type),icon:"check-double",run:()=>toggleShareTypeSelection(type)})),isSelected:isShareSelected,toggle:toggleShareSelection,all:toggleSelectAllShares,expired:selectExpiredShares,remove:confirmDeleteSelectedShares,count:()=>selectedShareCount.value};});
 </script>
 
 <style lang="scss">

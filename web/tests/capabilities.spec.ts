@@ -131,3 +131,25 @@ test("mobile search can expose both a source filter and collapsed state", async 
   await expand.click();
   await expect(page.locator(".studio-card")).toHaveCount(1);
 });
+
+for (const path of ["/shares", "/archives"]) {
+  test(`management can select one resource type independently (${path})`, async ({ page }) => {
+    const { db } = await installBackend(page);
+    if (path === "/shares") {
+      db.tokens.push({ ...db.tokens[0], token: "second-stash-share" });
+      db.tokens.push({ ...db.tokens[0], type: "sub", name: "JMS-demo", token: "single-sub-share" });
+    }
+    await page.goto(path);
+    await page.getByRole("button", { name: "筛选与批量管理", exact: true }).click();
+    const management = page.locator(".studio-management");
+    await management.getByRole("button", { name: "全选文件", exact: true }).click({ timeout: 1500 });
+    const selected = management.locator(".studio-management-item").filter({ has: page.locator(".nut-icon-checked") });
+    await expect(selected).toHaveCount(path === "/shares" ? 3 : 1);
+    await expect(selected.first()).toContainText(path === "/shares" ? "configuration" : "旧版手机配置");
+    await management.getByRole("button", { name: "取消文件全选", exact: true }).click();
+    await expect(selected).toHaveCount(0);
+    await management.getByRole("button", { name: "全选单条订阅", exact: true }).click();
+    await expect(selected).toHaveCount(1);
+    await expect(selected.first()).toContainText(path === "/shares" ? "JMS-demo" : "旅行备用订阅");
+  });
+}
