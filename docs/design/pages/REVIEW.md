@@ -67,3 +67,5 @@ Gist、GitLab 和外部订阅请求没有使用真实账户在本次检查中执
 - 标准主页面无障碍检查：三内核共 18 项通过，结果包含在上述浏览器检查中，不重复累计。
 
 Saved list filters are surfaced inside search only while active, with a tooltip and a keyboard-accessible clear action. A persisted remote-only subscription filter previously hid local subscriptions and collections with no visible explanation. The regression fails before the toolbar change and passes after it at 390px and 1440px in Chromium, Firefox and WebKit; clearing restores local/combined resources and survives reload. Default search/card geometry remains covered by the existing interaction and geometry checks. Mobile and desktop screenshots were read. No backend data, source classification or filtering capability is changed.
+
+The readiness check waits for notification entrance animation to finish before dispatching blur: vue3-toastify resumes its timer at the entrance-animation event, so pausing earlier races that event. This changes test synchronization only; pause assertions, timeouts, browser coverage and production notification behavior are unchanged.

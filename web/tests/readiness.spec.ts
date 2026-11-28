@@ -23,7 +23,9 @@ test("review waits for initialization and can dismiss a paused notification", as
   } finally {
     releaseSettings();
   }
-  await page.locator(".Toastify__toast").first().waitFor();
+  const notification = page.locator(".Toastify__toast").first();
+  await expect(notification).toBeVisible();
+  await expect(notification).not.toHaveClass(/Toastify__slide-enter/);
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   await expect(page.locator(".Toastify__progress-bar").first()).toHaveCSS(
     "animation-play-state",
