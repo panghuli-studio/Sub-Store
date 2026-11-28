@@ -1003,7 +1003,7 @@ studioWatchEffect(() => { studio.groups = [
   { label: t("studio.groupShare"), isCollapsed: () => Boolean(isFold("share")), expand: () => { if (isFold("share")) toggleFold("share"); } }
 ]; });
 studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
-studioWatchEffect(()=>{studio.selection={isSelected:isEntrySelected,toggle:toggleEntrySelection,all:toggleSelectAllEntries,remove:confirmDeleteSelectedEntries,restore:restoreSelectedEntries,count:()=>selectedEntryCount.value};});
+studioWatchEffect(()=>{studio.selection={groups:(["sub", "col", "file", "artifact", "share"] as ArchiveGroupKey[]).filter(type=>getVisibleEntriesByType(type).length).map(type=>({label:getTypeSelectionA11yLabel(type),icon:"check-double",run:()=>toggleTypeSelection(type)})),isSelected:isEntrySelected,toggle:toggleEntrySelection,all:toggleSelectAllEntries,remove:confirmDeleteSelectedEntries,restore:restoreSelectedEntries,count:()=>selectedEntryCount.value};});
 </script>
 
 <style lang="scss">

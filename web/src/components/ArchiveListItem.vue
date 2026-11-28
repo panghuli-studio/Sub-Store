@@ -363,8 +363,9 @@ studioEffect(() => {
     name: String(displayName.value),
     actions: [
       {
-        label: t("studio.preview"),
-        icon: "eye",
+        label: t("studio.restore"),
+        icon: "reply",
+        disabled: props.disabled,
         run: () => emit("restore", props.data),
         danger: false,
       },
