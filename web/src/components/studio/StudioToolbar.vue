@@ -27,6 +27,16 @@
         :aria-label="t('studio.search')"
         clearable
       />
+      <UiButton
+        v-if="activeFilter"
+        class="studio-active-filter"
+        v-tooltip="{ content: t('studio.clearFilter', { filter: activeFilter }) }"
+        :aria-label="t('studio.clearFilter', { filter: activeFilter })"
+        @click="studio.filters?.set('all')"
+      >
+        <span>{{ activeFilter }}</span>
+        <font-awesome-icon icon="fa-solid fa-xmark" aria-hidden="true" />
+      </UiButton>
     </div>
     <div class="studio-toolbar-actions">
       <UiIconButton
@@ -152,6 +162,14 @@ const { t, locale } = useI18n();
 const search = useListSearchStore();
 const methods = useMethodStore();
 const studio = useStudioStore();
+const activeFilter = computed(() => {
+  const filters = studio.filters;
+  if (!filters || filters.value.value === "all") return "";
+  const option = filters.options.value.find(
+    (option) => option.value === filters.value.value,
+  );
+  return option?.label || option?.text || "";
+});
 const { showListViewToggle, effectiveListViewMode, toggleListViewMode } =
   useListViewMode();
 const listViewModeToggleTitle = computed(() =>

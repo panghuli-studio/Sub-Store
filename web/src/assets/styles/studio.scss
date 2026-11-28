@@ -123,6 +123,28 @@ body {
   font-size: 16px !important;
   min-height: 44px;
 }
+.studio-active-filter.studio-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  max-width: 50%;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+.studio-active-filter span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.studio-active-filter:hover,
+.studio-active-filter:focus-visible {
+  background: var(--surface-hover);
+}
 .studio-toolbar-actions,
 .studio-card-actions {
   display: flex;
