@@ -62,19 +62,8 @@
                 : t("studio.local")
           }}
         </p>
-        <p
-          v-if="
-            !appearanceSetting.isSimpleMode ||
-            appearanceSetting.isSimpleShowRemark
-          "
-          class="studio-card-detail"
-        >
-          {{
-            remarkText ||
-            (props.type === "collection"
-              ? collectionDetail
-              : nonSimpleSecondLine)
-          }}
+        <p v-if="cardDetailLine" class="studio-card-detail" :title="cardDetailLine">
+          {{ cardDetailLine }}
         </p>
       </div>
     </div>
@@ -474,6 +463,18 @@ const nonSimpleSecondLine = computed(() => {
   }
 
   return [flow.value.secondLine, remarkText.value].filter(Boolean).join(" · ");
+});
+
+const cardDetailLine = computed(() => {
+  const showRemark = !appearanceSetting.value.isSimpleMode || appearanceSetting.value.isSimpleShowRemark;
+  const detail = props.type === "collection"
+    ? collectionDetail.value
+    : props.sub.noFlow
+      ? ""
+      : typeof flow.value === "object"
+        ? [flow.value.firstLine, flow.value.secondLine].filter(Boolean).join(" · ")
+        : props.sub.source === "remote" ? flow.value : "";
+  return [detail, showRemark ? remarkText.value : ""].filter(Boolean).join(" · ");
 });
 
 const closeCompare = () => {
@@ -878,6 +879,7 @@ const studio = useStudioStore();
 const studioKey = props.type + ":" + name;
 studioEffect(() => {
   studio.resources[studioKey] = {
+    tags: tag || [],
     name: String(displayName),
     actions: [
       {

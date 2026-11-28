@@ -543,6 +543,7 @@ const studio = useStudioStore();
 const studioKey = "file" + ":" + name;
 studioEffect(() => {
   studio.resources[studioKey] = {
+    tags: tag || [],
     name: String(displayName),
     actions: [
       {

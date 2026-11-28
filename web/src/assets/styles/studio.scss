@@ -1334,3 +1334,14 @@ body {
     min-width: 44px;
   }
 }
+
+.studio-logs-actions {
+  justify-content: flex-end;
+  margin-bottom: var(--s3);
+}
+.studio-resource-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}

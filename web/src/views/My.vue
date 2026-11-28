@@ -801,9 +801,7 @@
       </div>
     </section></nut-popup
   >
-  <div class="studio-language-mount">
-    <LanguageSwitcherButton ref="studioLanguage" />
-  </div>
+  <LanguageSwitcherButton ref="studioLanguage" :show-trigger="false" />
   <nut-dialog
     v-model:visible="showDownloadTokenDialog"
     teleport="#app"

@@ -46,19 +46,8 @@
             )
           }}
         </p>
-        <p
-          v-if="
-            !appearanceSetting.isSimpleMode ||
-            appearanceSetting.isSimpleShowRemark
-          "
-          class="studio-card-detail"
-        >
-          {{
-            nonSimpleSecondLine +
-            (remark && !nonSimpleSecondLine.includes(remark)
-              ? " · " + remark
-              : "")
-          }}
+        <p v-if="cardDetailLine" class="studio-card-detail" :title="cardDetailLine">
+          {{ cardDetailLine }}
         </p>
       </div>
     </div>
@@ -227,6 +216,11 @@ const nonSimpleSecondLine = computed(() => {
   return isDualNonSimpleMode.value
     ? [baseLine, remark.value].filter(Boolean).join(" · ")
     : baseLine;
+});
+
+const cardDetailLine = computed(() => {
+  const showRemark = !appearanceSetting.value.isSimpleMode || appearanceSetting.value.isSimpleShowRemark;
+  return [expiresTime.value, leftTime.value, showRemark ? remark.value : ""].filter(Boolean).join(" · ");
 });
 
 const icon = computed(() => {
@@ -431,6 +425,7 @@ const studio = useStudioStore();
 const studioKey = "share" + ":" + name.value;
 studioEffect(() => {
   studio.resources[studioKey] = {
+    tags: shareTags.value,
     data: props.data,
     name: String(displayName.value),
     actions: [

@@ -5,6 +5,7 @@ export interface ResourceAction {
   icon: string;
   run: () => unknown;
   danger?: boolean;
+  disabled?: boolean;
 }
 export const useStudioStore = defineStore("studio", () => {
   const managementOpen = ref(false);
@@ -14,6 +15,7 @@ export const useStudioStore = defineStore("studio", () => {
       {
         name: string;
         data?: any;
+        tags?: string[];
         controls?: {
           label: string;
           get: () => boolean;
@@ -24,6 +26,7 @@ export const useStudioStore = defineStore("studio", () => {
       }
     >
   >({});
+  const groups = shallowRef<{ label: string; isCollapsed: () => boolean; expand: () => void }[]>([]);
   const selection = shallowRef<any>(null);
   const description = ref("");
   const pageActions = shallowRef<ResourceAction[]>([]);
@@ -37,6 +40,7 @@ export const useStudioStore = defineStore("studio", () => {
     Object.keys(resources).forEach((key) => delete resources[key]);
     filters.value = null;
     selection.value = null;
+    groups.value = [];
     pageActions.value = [];
     description.value = "";
   }
@@ -46,6 +50,7 @@ export const useStudioStore = defineStore("studio", () => {
     resources,
     filters,
     selection,
+    groups,
     pageActions,
     clear,
   };
