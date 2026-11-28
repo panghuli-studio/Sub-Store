@@ -31,14 +31,8 @@
           }}</UiButton>
         </h2>
         <p class="studio-card-type">{{ artifact.platform }}</p>
-        <p
-          v-if="
-            !appearanceSetting.isSimpleMode ||
-            appearanceSetting.isSimpleShowRemark
-          "
-          class="studio-card-detail"
-        >
-          {{ remarkText || nonSimpleDetailSecondLine }}
+        <p v-if="cardDetailLine" class="studio-card-detail" :title="cardDetailLine">
+          {{ cardDetailLine }}
         </p>
       </div>
     </div>
@@ -395,6 +389,12 @@ const nonSimpleDetailSecondLine = computed(() => {
     .join(" · ");
 });
 
+const cardDetailLine = computed(() => {
+  const showRemark = !appearanceSetting.value.isSimpleMode || appearanceSetting.value.isSimpleShowRemark;
+  return [detail.value.firstLine, detail.value.secondLine, t(isSyncOpen.value ? "studio.syncEnabled" : "studio.syncDisabled"), showRemark ? remarkText.value : ""]
+    .filter(Boolean).join(" · ");
+});
+
 const swipeController = () => {
   if (swipeIsOpen.value) {
     swipe.value?.close();
@@ -511,6 +511,7 @@ const studio = useStudioStore();
 const studioKey = "artifact" + ":" + artifact.value.name;
 studioEffect(() => {
   studio.resources[studioKey] = {
+    tags: tag.value,
     name: String(displayName.value),
     controls: [
       {

@@ -3,50 +3,28 @@
     class="logs-page-wrapper"
     :class="{ 'is-overlay': isOverlayMode }"
   >
-    <Teleport to="body">
-      <div
-        class="logs-nav-action-layer"
-        :class="{ 'is-overlay': isOverlayMode }"
-      >
-        <button v-tooltip="{content: $t('logsPage.refresh')}"
-          v-if="canUseLogs"
-          type="button"
-          class="logs-nav-action-button logs-refresh-toggle"
-          :class="{ loading: isLoading }"
-          :style="{ top: navActionOffset }"
-          :aria-label="$t('logsPage.refresh')"
-          :title="$t('logsPage.refresh')"
-          :disabled="isLoading"
-          @click="loadLogs()"
-        >
-          <font-awesome-icon v-tooltip="{content: $t('logsPage.refresh')}" icon="fa-solid fa-arrow-rotate-right" />
-        </button>
-        <button v-tooltip="{content: isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')}"
-          v-if="logs.length > 0"
-          type="button"
-          class="logs-nav-action-button logs-selection-toggle"
-          :style="{ top: navActionOffset }"
-          :aria-label="isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')"
-          :title="isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')"
-          @click="toggleSelectionMode"
-        >
-          <font-awesome-icon v-tooltip="{content: isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')}"
-            :icon="isSelectionMode ? 'fa-solid fa-xmark' : 'fa-solid fa-list-check'"
-          />
-        </button>
-        <button v-tooltip="{content: $t('logsPage.clear')}"
-          v-if="logs.length > 0"
-          type="button"
-          class="logs-nav-action-button logs-clear-toggle"
-          :style="{ top: navActionOffset, right: logsClearButtonRight }"
-          :aria-label="$t('logsPage.clear')"
-          :title="$t('logsPage.clear')"
-          @click="confirmClearLogs"
-        >
-          <font-awesome-icon v-tooltip="{content: $t('logsPage.clear')}" icon="fa-solid fa-eraser" />
-        </button>
-      </div>
-    </Teleport>
+    <div class="studio-card-actions studio-logs-actions">
+      <UiIconButton
+        v-if="canUseLogs"
+        :label="$t('logsPage.refresh')"
+        icon="arrows-rotate"
+        :disabled="isLoading"
+        @activate="loadLogs()"
+      />
+      <UiIconButton
+        v-if="logs.length > 0"
+        :label="isSelectionMode ? $t('logsPage.selectMode.cancel') : $t('logsPage.selectMode.enter')"
+        :icon="isSelectionMode ? 'xmark' : 'list-check'"
+        @activate="toggleSelectionMode"
+      />
+      <UiIconButton
+        v-if="logs.length > 0"
+        :label="$t('logsPage.clear')"
+        icon="eraser"
+        danger
+        @activate="confirmClearLogs"
+      />
+    </div>
 
     <section v-if="canUseLogs" class="logs-controls">
       <div class="logs-search-row">

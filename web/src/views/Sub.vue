@@ -625,6 +625,10 @@ const importTips = () => {
 
 const studio=useStudioStore();
 studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.import'),icon:'file-import',run:upload},{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')}];});
+studioWatchEffect(() => { studio.groups = [
+  { label: t("studio.groupSub"), isCollapsed: () => Boolean(isFold("sub")), expand: () => { if (isFold("sub")) toggleFold("sub"); } },
+  { label: t("studio.groupCol"), isCollapsed: () => Boolean(isFold("col")), expand: () => { if (isFold("col")) toggleFold("col"); } }
+]; });
 studioWatchEffect(()=>{studio.filters={options:tags,value:tag,set:setTag};});
 </script>
 

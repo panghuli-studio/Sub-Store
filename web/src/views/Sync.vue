@@ -527,7 +527,14 @@ const filteredArtifacts = useFilteredDraggableList(artifacts, shouldShowElement)
 
 const studio=useStudioStore();
 studioWatchEffect(()=>{studio.filters={options:tags,value:tag,set:setTag};});
-studioWatchEffect(()=>{studio.description=globalSyncCronText.value;studio.pageActions=[{label:t('studio.upload'),icon:'cloud-arrow-up',run:uploadAll},{label:t('myPage.btn.download'),icon:'cloud-arrow-down',run:downloadAll},{label:t('studio.preview'),icon:'eye',run:preview}];});
+studioWatchEffect(() => {
+  studio.description = globalSyncCronText.value;
+  studio.pageActions = [
+    ...(artifacts.value.length ? [{ label: t("studio.upload"), icon: "cloud-arrow-up", run: uploadAll, disabled: uploadAllIsDisabled.value || uploadAllIsLoading.value }] : []),
+    ...(syncPlatform.value !== "gitlab" ? [{ label: t("myPage.btn.download"), icon: "cloud-arrow-down", run: downloadAll, disabled: downloadAllIsLoading.value }] : []),
+    { label: t("studio.preview"), icon: "eye", run: preview },
+  ];
+});
 </script>
 
 <style lang="scss" scoped>

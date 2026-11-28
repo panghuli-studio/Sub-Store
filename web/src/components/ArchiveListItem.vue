@@ -39,14 +39,8 @@
         <p class="studio-card-type">
           {{ t("specificWord." + getArchiveTypeLabelKey(itemType)) }}
         </p>
-        <p
-          v-if="
-            !appearanceSetting.isSimpleMode ||
-            appearanceSetting.isSimpleShowRemark
-          "
-          class="studio-card-detail"
-        >
-          {{ archiveTimeLine }}
+        <p v-if="cardDetailLine" class="studio-card-detail" :title="cardDetailLine">
+          {{ cardDetailLine }}
         </p>
       </div>
     </div>
@@ -355,10 +349,16 @@ const nonSimpleSecondLine = computed(() => {
   return [archiveTimeLine.value, remark.value].filter(Boolean).join(" · ");
 });
 
+const cardDetailLine = computed(() => {
+  const showRemark = !appearanceSetting.value.isSimpleMode || appearanceSetting.value.isSimpleShowRemark;
+  return [...detailParts.value, archiveTimeLine.value, showRemark ? remark.value : ""].filter(Boolean).join(" · ");
+});
+
 const studio = useStudioStore();
 const studioKey = "archive" + ":" + props.data.id;
 studioEffect(() => {
   studio.resources[studioKey] = {
+    tags: tags.value,
     data: props.data,
     name: String(displayName.value),
     actions: [

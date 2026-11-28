@@ -927,6 +927,11 @@ const confirmDeleteSelectedShares = () => {
 
 const studio=useStudioStore();
 studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')},{label:t('studio.expand')+' · '+t('studio.groupFile'),icon:'layer-group',run:()=>toggleFold('file')}];});
+studioWatchEffect(() => { studio.groups = [
+  { label: t("studio.groupSub"), isCollapsed: () => Boolean(isFold("sub")), expand: () => { if (isFold("sub")) toggleFold("sub"); } },
+  { label: t("studio.groupCol"), isCollapsed: () => Boolean(isFold("col")), expand: () => { if (isFold("col")) toggleFold("col"); } },
+  { label: t("studio.groupFile"), isCollapsed: () => Boolean(isFold("file")), expand: () => { if (isFold("file")) toggleFold("file"); } }
+]; });
 studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
 studioWatchEffect(()=>{studio.selection={isSelected:isShareSelected,toggle:toggleShareSelection,all:toggleSelectAllShares,expired:selectExpiredShares,remove:confirmDeleteSelectedShares,count:()=>selectedShareCount.value};});
 </script>

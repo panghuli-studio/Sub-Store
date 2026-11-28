@@ -1,5 +1,5 @@
 <template>
-  <button v-tooltip="{content: t('navBar.langSwitcher.cellTitle')}"
+  <button v-if="props.showTrigger" v-tooltip="{content: t('navBar.langSwitcher.cellTitle')}"
     type="button"
     :class="[
       'language-switch-button',
@@ -58,10 +58,12 @@ import {
 const props = withDefaults(
   defineProps<{
     variant?: "compact" | "icon";
+    showTrigger?: boolean;
     zIndex?: number | string;
   }>(),
   {
     variant: "compact",
+    showTrigger: true,
     zIndex: 12000,
   },
 );

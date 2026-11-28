@@ -37,6 +37,16 @@
         <span>{{ activeFilter }}</span>
         <font-awesome-icon icon="fa-solid fa-xmark" aria-hidden="true" />
       </UiButton>
+      <UiButton
+        v-if="collapsedGroups.length"
+        class="studio-active-filter"
+        v-tooltip="{ content: t('studio.expandAllGroups') }"
+        :aria-label="t('studio.expandAllGroups')"
+        @click="collapsedGroups.forEach(group => group.expand())"
+      >
+        <span>{{ t('studio.collapsedGroups', { count: collapsedGroups.length }) }}</span>
+        <font-awesome-icon icon="fa-solid fa-layer-group" aria-hidden="true" />
+      </UiButton>
     </div>
     <div class="studio-toolbar-actions">
       <UiIconButton
@@ -82,6 +92,7 @@
         :key="action.label"
         :label="action.label"
         :icon="action.icon"
+        :disabled="action.disabled"
         @activate="action.run"
       /><template v-if="studio.selection"
         ><UiIconButton
@@ -119,6 +130,9 @@
         @update:model-value="studio.selection.toggle(resource.data)"
         >{{ resource.name }}</nut-checkbox
       ><strong v-else>{{ resource.name }}</strong>
+      <div v-if="resource.tags?.length" class="studio-resource-tags">
+        <nut-tag v-for="tag in resource.tags" :key="tag">{{ tag }}</nut-tag>
+      </div>
       <div
         v-for="control in resource.controls"
         :key="control.label"
@@ -139,6 +153,7 @@
           :label="action.label"
           :icon="action.icon"
           :danger="action.danger"
+          :disabled="action.disabled"
           @activate="action.run"
         />
       </div></article
@@ -162,6 +177,7 @@ const { t, locale } = useI18n();
 const search = useListSearchStore();
 const methods = useMethodStore();
 const studio = useStudioStore();
+const collapsedGroups = computed(() => studio.groups.filter(group => group.isCollapsed()));
 const activeFilter = computed(() => {
   const filters = studio.filters;
   if (!filters || filters.value.value === "all") return "";

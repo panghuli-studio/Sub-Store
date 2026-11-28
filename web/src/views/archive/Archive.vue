@@ -995,6 +995,13 @@ onMounted(() => {
 
 const studio=useStudioStore();
 studioWatchEffect(()=>{studio.pageActions=[{label:t('studio.expand')+' · '+t('studio.groupSub'),icon:'layer-group',run:()=>toggleFold('sub')},{label:t('studio.expand')+' · '+t('studio.groupCol'),icon:'layer-group',run:()=>toggleFold('col')},{label:t('studio.expand')+' · '+t('studio.groupFile'),icon:'layer-group',run:()=>toggleFold('file')},{label:t('studio.expand')+' · '+t('studio.groupArtifact'),icon:'layer-group',run:()=>toggleFold('artifact')},{label:t('studio.expand')+' · '+t('studio.groupShare'),icon:'layer-group',run:()=>toggleFold('share')}];});
+studioWatchEffect(() => { studio.groups = [
+  { label: t("studio.groupSub"), isCollapsed: () => Boolean(isFold("sub")), expand: () => { if (isFold("sub")) toggleFold("sub"); } },
+  { label: t("studio.groupCol"), isCollapsed: () => Boolean(isFold("col")), expand: () => { if (isFold("col")) toggleFold("col"); } },
+  { label: t("studio.groupFile"), isCollapsed: () => Boolean(isFold("file")), expand: () => { if (isFold("file")) toggleFold("file"); } },
+  { label: t("studio.groupArtifact"), isCollapsed: () => Boolean(isFold("artifact")), expand: () => { if (isFold("artifact")) toggleFold("artifact"); } },
+  { label: t("studio.groupShare"), isCollapsed: () => Boolean(isFold("share")), expand: () => { if (isFold("share")) toggleFold("share"); } }
+]; });
 studioWatchEffect(()=>{studio.filters={options:tagOptions,value:tag,set:setTag};});
 studioWatchEffect(()=>{studio.selection={isSelected:isEntrySelected,toggle:toggleEntrySelection,all:toggleSelectAllEntries,remove:confirmDeleteSelectedEntries,restore:restoreSelectedEntries,count:()=>selectedEntryCount.value};});
 </script>
